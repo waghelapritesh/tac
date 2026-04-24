@@ -37,12 +37,27 @@ Stops after DESIGN. Does NOT build, deploy, or touch code.
    - Propose 2-3 approaches with trade-offs
    - User picks → write spec + plan
    - Save to `.tac/history/{feature}-spec.md` and `{feature}-plan.json`
-5. Show summary:
+5. **Auto-generate docs** in `.tac/docs/{feature}/`:
+   - **PRD.md** — Product Requirements Document:
+     - Problem statement (from ASK answers)
+     - Target users and stakeholders
+     - Functional requirements (from decisions captured)
+     - Non-functional requirements (performance, security, mobile)
+     - Success criteria
+     - Out of scope
+   - **SOP.md** — Standard Operating Procedure:
+     - How to deploy this feature (from stack profile deploy config)
+     - How to test (test runner commands)
+     - How to rollback (from stack profile safety rules)
+     - Environment details (hosts, ports, services)
+6. Show summary:
    ```
    Think complete for: {feature}
    
-   Spec: .tac/history/{feature}-spec.md
-   Plan: .tac/history/{feature}-plan.json
+   Spec:  .tac/history/{feature}-spec.md
+   Plan:  .tac/history/{feature}-plan.json
+   PRD:   .tac/docs/{feature}/PRD.md
+   SOP:   .tac/docs/{feature}/SOP.md
    
    Ready to build? Run /tac-build {feature}
    ```

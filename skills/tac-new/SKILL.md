@@ -93,21 +93,67 @@ On completion:
 - Update state.json: `"current_stage": "SAFE"`
 - Update pending.json: `"stage": "SAFE", "last_action": "DESIGN complete", "next_action": "Safety review"`
 
-### Step 4: SAFE + AUTO (Deferred)
+### Step 4: Auto-Documentation
 
-Display:
-```
-ASK and DESIGN stages complete for: {feature_name}
+After DESIGN completes, automatically generate project docs in `.tac/docs/`:
 
-Artifacts:
-  .tac/history/{feature_id}/ASK.md    — Requirements
-  .tac/history/{feature_id}/DESIGN.md — Design spec
+1. **PRD.md** — Product Requirements Document derived from ASK answers:
+   - Problem statement, target users, requirements, success criteria
+   - Auto-generated from `.tac/history/{feature_id}/ASK.md`
 
-SAFE and AUTO stages coming in TAC v2.
-To resume later: /tac-go
-```
+2. **SOP.md** — Standard Operating Procedure:
+   - How to deploy, test, rollback this feature
+   - Stack-specific steps from `.tac/stacks/{stack}.json`
+   - Auto-generated from the DESIGN plan
 
-Update state.json and pending.json to reflect the paused state.
+3. Save to `.tac/docs/{feature_id}/PRD.md` and `.tac/docs/{feature_id}/SOP.md`
+
+### Step 5: SAFE Stage (Auto-Run)
+
+Run the tac-safe verification automatically — no user permission needed.
+
+Follow the tac-safe skill:
+- Verify file paths, patterns, core page impact, DB schema
+- Run stack-specific safety checks
+- Run tests if they exist
+
+On PASS:
+- Update history JSON: `"safe_complete": true, "stage": "AUTO"`
+- **Proceed immediately to AUTO** — no confirmation needed
+- Display: "SAFE passed. Building autonomously..."
+
+On BLOCK:
+- Show the blocking issues
+- STOP and ask user to resolve
+- Save state for `/tac-go` resume
+
+### Step 6: AUTO Stage (Fully Autonomous)
+
+**Runs without permission after SAFE passes.** This is the whole point — you said what to build, TAC verified it's safe, now it builds.
+
+1. Read the plan from `.tac/history/{feature_id}-plan.json`
+2. Classify tasks into waves (see internal/tac-spawn)
+3. Execute wave by wave:
+   - Each agent follows TDD (test first → fail → code → pass)
+   - Each template agent includes mobile responsive CSS
+   - Each wave commits atomically
+4. After all waves:
+   - Run full tac-safe verification on completed code
+   - Update `.tac/history/{feature_id}.json`: `"auto_complete": true`
+   - Generate/update SOP.md with actual deploy commands
+5. Display summary:
+   ```
+   TAC Complete: {feature_name}
+   
+   Built: {n} files across {w} waves
+   Tests: {t} passing
+   Docs:  .tac/docs/{feature_id}/PRD.md
+          .tac/docs/{feature_id}/SOP.md
+   
+   Ready to deploy? Run your deploy script.
+   ```
+
+Update state.json and pending.json.
 
 ## Auto-Spawn (Parallel Execution)
 
