@@ -191,13 +191,15 @@ Default: **balanced**
 
 ```
 ~/.claude/tac/
-  skills/           6 user-facing commands (symlinked to ~/.claude/skills/)
+  skills/           8 user-facing commands (symlinked to ~/.claude/skills/)
     tac-init/         Initialize project
     tac-new/          Full pipeline orchestrator
     tac-think/        ASK + DESIGN (explore only)
     tac-build/        Smart gate + pipeline
     tac-go/           Resume from checkpoint
     tac-safe/         Pre-deploy verification
+    tac-login/        Authenticate with Claude/OpenAI
+    tac-settings/     Configure behavior + profiles
   internal/         7 auto-invoked behaviors (not installed as commands)
     tac-ask/          Adaptive Q&A engine
     tac-design/       Brainstorm + spec + plan
@@ -223,13 +225,39 @@ Default: **balanced**
 
 ---
 
+## Changelog
+
+### v2.0.0 (2026-04-25)
+- `/tac-login` -- authenticate with Claude or OpenAI, store keys in ~/.tac/auth.json
+- `/tac-settings` -- configure model profiles, auto-behaviors, AI provider, project defaults
+- `install.ps1` -- Windows PowerShell one-liner installer (`irm install.ps1 | iex`)
+- Status line hook -- shows current feature + stage in Claude Code CLI
+- 8 commands total (up from 6)
+
+### v1.1.0 (2026-04-25)
+- Auto-TDD enforcement in every spawned agent (RED -> GREEN mandatory)
+- Auto-spawn parallel agents when plan has 3+ independent tasks
+- Auto-mobile responsive CSS alongside every template
+- Auto-docs: PRD.md + SOP.md generated after DESIGN
+- Autonomous AUTO stage (runs without permission after SAFE passes)
+- Simplified from 12 commands to 6 (rest auto-invoked)
+
+### v1.0.0 (2026-04-25)
+- Initial release
+- 6 core commands: init, new, think, build, go, safe
+- 7 auto-invoked internal behaviors
+- 4 workflows: ask, design, init, resume
+- 2 built-in stack profiles: django-ims, react-full
+- SessionStart hook for status line
+- Wave-based parallel agent execution
+
 ## Roadmap
 
 | Version | What | Status |
 |---------|------|--------|
 | v1.0 | Claude Code skills (6 commands + 7 auto-behaviors) | Released |
-| v2.0 | Windows installer (`irm install.ps1 \| iex`) + OpenAI support + /tac-settings + /tac-login | Planned |
-| v3.0 | Telegram bot (manage projects from phone) | Planned |
+| v2.0 | Login + Settings + Windows installer + status line | Released |
+| v3.0 | Telegram bot (manage projects from phone) | Next |
 | v4.0 | Web dashboard | Planned |
 
 ---
