@@ -1,0 +1,79 @@
+{
+  "name": "react-full",
+  "label": "React + Tailwind + TypeScript + Python API + Postgres",
+  "description": "Modern full-stack app with React frontend and Python backend",
+
+  "scaffold": {
+    "frontend": "src/",
+    "backend": "api/",
+    "components": "src/components/",
+    "pages": "src/pages/",
+    "hooks_dir": "src/hooks/",
+    "api_routes": "api/routes/",
+    "api_models": "api/models/",
+    "test_dir": "tests/",
+    "static_dir": "public/"
+  },
+
+  "files": {
+    "page": ["{Page}.tsx", "{Page}.test.tsx"],
+    "component": ["{Component}.tsx", "{Component}.test.tsx"],
+    "hook": ["use{Hook}.ts", "use{Hook}.test.ts"],
+    "api_route": ["routes/{resource}.py"],
+    "api_model": ["models/{resource}.py"]
+  },
+
+  "patterns": {
+    "styling": "Tailwind utility classes; no custom CSS unless necessary; use @apply for repeated patterns",
+    "state": "React hooks + context for local state; React Query for server state",
+    "routing": "React Router with lazy loading",
+    "api_client": "fetch() with typed responses; API base URL from env",
+    "backend": "FastAPI or Flask; SQLAlchemy 2.0 with async; Alembic migrations",
+    "auth": "JWT tokens; httpOnly cookies; refresh token rotation",
+    "validation": "Zod on frontend; Pydantic on backend"
+  },
+
+  "registration": {
+    "routes": "Add route in src/App.tsx or src/router.tsx",
+    "api": "Register router in api/main.py"
+  },
+
+  "deploy": {
+    "frontend": "npm run build → static hosting (Vercel/Nginx/S3)",
+    "backend": "Docker compose or direct gunicorn deploy",
+    "services": ["nginx", "gunicorn", "postgres", "redis"],
+    "post_deploy": ["npm run build", "docker compose up -d"]
+  },
+
+  "safety": {
+    "core_pages": [],
+    "never_do": [
+      "Commit .env files",
+      "Expose API keys in frontend code",
+      "Skip TypeScript strict mode"
+    ],
+    "always_do": [
+      "Run npm run build before deploying",
+      "Run pytest before deploying backend",
+      "Check for TypeScript errors"
+    ]
+  },
+
+  "mobile_css": {
+    "approach": "Tailwind responsive classes (mobile-first)",
+    "breakpoints": {
+      "sm": "640px",
+      "md": "768px",
+      "lg": "1024px",
+      "xl": "1280px"
+    },
+    "patterns": {
+      "tables": "Use responsive table component or card layout on sm:",
+      "sidebar": "Hidden on mobile, toggle with hamburger (md:block)",
+      "forms": "w-full on mobile, grid cols on md:",
+      "modals": "Full screen on mobile (inset-0), centered on md:",
+      "navigation": "Mobile: bottom nav or hamburger; Desktop: sidebar or top nav"
+    },
+    "convention": "Mobile-first: base styles are mobile, add md: lg: for larger screens"
+  }
+}

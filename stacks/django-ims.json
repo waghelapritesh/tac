@@ -1,0 +1,108 @@
+{
+  "name": "django-ims",
+  "label": "Django + InvenTree Patches",
+  "description": "Django app extensions deployed into InvenTree via SSH",
+
+  "scaffold": {
+    "app_dir": "inventree_patches/{module}/",
+    "templates_dir": "inventree_patches/templates/{module}/",
+    "static_dir": "inventree_patches/static/{module}/",
+    "deploy_dir": "scripts/deploy/",
+    "test_dir": "tests/",
+    "spec_dir": "docs/superpowers/specs/",
+    "plan_dir": "docs/superpowers/plans/"
+  },
+
+  "files": {
+    "required": [
+      "__init__.py",
+      "apps.py",
+      "models.py",
+      "api.py",
+      "urls.py",
+      "serializers.py"
+    ],
+    "optional": [
+      "admin.py",
+      "signals.py",
+      "fsm.py",
+      "views.py"
+    ],
+    "deploy": "deploy_{module}.py",
+    "template": "{module}/index.html"
+  },
+
+  "patterns": {
+    "apps": "default_auto_field = 'django.db.models.BigAutoField'; name = '{module}'",
+    "models": "managed=False with raw SQL in deploy; db_table = '{module}_{model}'; AUTH_USER = settings.AUTH_USER_MODEL for user FKs; string refs for cross-module FKs: 'part.Part'; TextChoices for enums; auto_now_add for created_at",
+    "api": "Use InvenTree.mixins.ListCreateAPI and RetrieveUpdateDestroyAPI; InvenTree.filters.SEARCH_ORDER_FILTER; override get_queryset() for RBAC; override perform_create() for user assignment",
+    "urls": "Export BOTH urlpatterns AND {module}_api_urls; path names: api-{module}-list, api-{module}-detail",
+    "serializers": "Separate ListSerializer + DetailSerializer; read_only_fields for timestamps; SerializerMethodField for computed properties",
+    "frontend": "HTML templates with fetch() to /api/{module}/; Bootstrap 5; vanilla JS"
+  },
+
+  "registration": {
+    "settings": "Add '{module}.apps.{ModuleName}Config' to INSTALLED_APPS in InvenTree/settings.py BEFORE InvenTree config",
+    "urls_api": "Add path('{module}/', include(('{module}.urls', '{module}'))) to apipatterns in InvenTree/urls.py",
+    "urls_frontend": "Wrap in try/except with login_required(TemplateView.as_view(template_name='{module}/index.html'))"
+  },
+
+  "deploy": {
+    "method": "paramiko SSH",
+    "targets": {
+      "test": { "host": "172.20.1.141", "port": 22, "user": "ctspl" },
+      "prod": { "host": "172.20.1.235", "port": 1235, "user": "ctspl" }
+    },
+    "remote_path": "/opt/inventree/src/backend/InvenTree/",
+    "upload_pattern": "SFTP to /tmp → sudo cp to destination → rm /tmp file",
+    "services": ["inventree-server", "inventree-worker", "django-q2-cron"],
+    "post_deploy": [
+      "sudo chown -R inventree:inventree {app_dir}",
+      "manage.py collectstatic --noinput",
+      "sudo systemctl restart inventree-server"
+    ],
+    "db_method": "Raw SQL via: sudo -u postgres psql -p 4235 -d inventree -f /tmp/setup.sql",
+    "db_rules": "CREATE TABLE IF NOT EXISTS; CREATE INDEX IF NOT EXISTS; GRANT ALL ON TABLE ... TO inventree",
+    "prerender": "Run manage.py prerender BEFORE collectstatic when editing templates/js/translated/*.js"
+  },
+
+  "safety": {
+    "core_pages": ["/part/", "/stock/", "/order/so/", "/order/po/", "/build/"],
+    "frozen_categories": {
+      "543": "REF (frozen except Barebones pk=740)",
+      "545": "EUC (fully frozen)"
+    },
+    "never_do": [
+      "Create Django users/tokens on production without permission",
+      "Use systemctl restart inventree (wrong unit name, silently no-ops)",
+      "Skip chown after file upload",
+      "Deploy during 9am-7pm IST business hours unless hotfix"
+    ],
+    "always_do": [
+      "Deploy to .141 test first",
+      "Backup existing files before overwriting",
+      "Verify endpoint responds after restart",
+      "Check existing deploy scripts for patterns before writing new ones"
+    ]
+  },
+
+  "mobile_css": {
+    "approach": "Separate CSS file injected via link tag in base.html",
+    "css_file": "bims-mobile/bims-mobile.css",
+    "js_file": "bims-mobile/bims-mobile.js",
+    "breakpoints": {
+      "mobile": "max-width: 768px",
+      "tablet": "min-width: 769px and max-width: 1024px",
+      "desktop": "min-width: 1025px"
+    },
+    "patterns": {
+      "tables": "Hide table on mobile, show card layout with key fields",
+      "sidebar": "Collapse to hamburger menu on mobile",
+      "forms": "Full-width inputs, stacked labels on mobile",
+      "modals": "Full-screen on mobile, centered dialog on desktop",
+      "navigation": "Bottom fixed nav on mobile, sidebar on desktop",
+      "lists": "Card-based layout on mobile with swipe-friendly spacing"
+    },
+    "deploy": "deploy_bims_mobile.py auto-bumps cache-buster query param"
+  }
+}
