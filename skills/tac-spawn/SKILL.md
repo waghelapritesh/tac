@@ -1,6 +1,6 @@
 ---
 name: tac-spawn
-description: Use when a TAC plan has multiple independent tasks that can be built in parallel — spawns focused subagents per task for faster execution
+description: Auto-invoked by tac-new and tac-build when a plan has 3+ independent tasks — spawns parallel subagents per wave for faster execution. Can also be called directly.
 argument-hint: "[feature-name]"
 ---
 

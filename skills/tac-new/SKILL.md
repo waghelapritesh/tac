@@ -109,6 +109,16 @@ To resume later: /tac-go
 
 Update state.json and pending.json to reflect the paused state.
 
+## Auto-Spawn (Parallel Execution)
+
+When the DESIGN stage produces a plan with 3+ independent tasks, TAC **automatically** uses parallel multi-agent execution. No need to invoke `/tac-spawn` separately.
+
+**Detection rule:** After DESIGN completes, if the plan has tasks that can be wave-classified (see tac-spawn skill), auto-spawn kicks in:
+- 1-2 tasks → sequential execution (no spawn overhead)
+- 3+ tasks with independent groups → auto-spawn parallel agents per wave
+
+The tac-spawn skill contains the full wave classification and agent prompt template. This orchestrator invokes it automatically when the plan qualifies.
+
 ## Error Handling
 
 - If the user interrupts at any point, save current progress to pending.json immediately
