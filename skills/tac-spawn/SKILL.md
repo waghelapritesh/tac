@@ -133,22 +133,50 @@ Test runner: {from stack profile — pytest for Python, vitest/jest for React}
 | deploy script | 1 | Independent |
 | api.py / views.py | 2 | Needs models + serializers |
 | urls.py (module) | 2 | Needs api views |
-| templates (HTML) | 3 | Needs API endpoints defined |
-| static (CSS/JS) | 3 | Needs template structure |
+| templates (HTML) + mobile CSS | 3 | **ALWAYS paired** — desktop + mobile built in parallel |
+| static (JS) | 3 | Needs template structure |
 | tests | 3 | Needs API defined |
 | registration (settings.py, main urls.py) | 4 | Shared files — sequential |
 | navbar updates | 4 | Shared file |
+
+## Auto-Mobile Rule
+
+**Every template agent automatically generates mobile responsive CSS.** This is NOT a separate task — it's baked into the template agent's job.
+
+When a template agent is spawned, its prompt includes:
+
+```
+MOBILE CSS IS MANDATORY. You are building BOTH desktop and mobile views.
+
+Read .tac/ui/preferences.json for approved patterns.
+Read .tac/stacks/{stack}.json mobile_css section for breakpoints.
+
+For django-ims stack:
+  - Desktop: table layout, sidebar navigation
+  - Mobile (max-width: 768px): card layout, hamburger nav, full-width forms
+  - Tablet (769px-1024px): compact table, collapsible sidebar
+  - Output: separate CSS file OR inline <style> media queries
+
+For react-full stack:
+  - Use Tailwind responsive classes (sm: md: lg:)
+  - Mobile-first: base styles are mobile, add md: for desktop
+  - No separate CSS file needed
+
+NEVER build desktop-only. Every page ships responsive.
+```
+
+If a template agent returns HTML without mobile breakpoints, the output is REJECTED.
 
 ## Example
 
 ```
 /tac-spawn payments-page
 
-TAC Spawn: payments-page (4 waves, 10 tasks)
+TAC Spawn: payments-page (4 waves, 11 tasks)
 
 Wave 1 (parallel, 4 agents):
-  Agent 1: models.py — Payment, PaymentStatus models
-  Agent 2: serializers.py — PaymentListSerializer, PaymentDetailSerializer
+  Agent 1: test_models.py → FAIL → models.py → PASS
+  Agent 2: test_serializers.py → FAIL → serializers.py → PASS
   Agent 3: admin.py — PaymentAdmin registration
   Agent 4: deploy_payments.py — deployment script
 
@@ -157,28 +185,29 @@ Wave 1 (parallel, 4 agents):
   ✓ Committed: "feat(payments): wave 1 — models, serializers, admin, deploy"
 
 Wave 2 (parallel, 2 agents):
-  Agent 5: api.py — PaymentList, PaymentDetail views
+  Agent 5: test_api.py → FAIL → api.py → PASS
   Agent 6: urls.py — payment API URL patterns
 
   [spawning 2 agents...]
   ✓ All 2 complete (8s)
   ✓ Committed: "feat(payments): wave 2 — API views + URLs"
 
-Wave 3 (parallel, 3 agents):
-  Agent 7: templates/payments/index.html — list page
-  Agent 8: static/payments/payments.css — mobile responsive CSS
-  Agent 9: tests/test_payments.py — API tests
+Wave 3 (parallel, 4 agents):
+  Agent 7: templates/payments/index.html — desktop + mobile responsive ← BOTH
+  Agent 8: static/payments/payments.js — frontend interactions
+  Agent 9: static/payments/payments-mobile.css — mobile overrides ← AUTO
+  Agent 10: tests/test_payments_api.py — API integration tests
 
-  [spawning 3 agents...]
-  ✓ All 3 complete (15s)
-  ✓ Committed: "feat(payments): wave 3 — templates, CSS, tests"
+  [spawning 4 agents...]
+  ✓ All 4 complete (15s)
+  ✓ Committed: "feat(payments): wave 3 — templates (responsive), JS, mobile CSS, tests"
 
 Wave 4 (sequential):
   Registering in settings.py + urls.py + navbar...
   ✓ Committed: "feat(payments): wave 4 — registration + navbar"
 
-Summary: 10 tasks, 4 waves, 9 parallel agents
-Total time: ~45s (vs ~3min sequential)
+Summary: 11 tasks, 4 waves, 10 parallel agents
+Every page responsive from day one.
 ```
 
 ## Safety
