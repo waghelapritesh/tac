@@ -1,6 +1,6 @@
 ---
 name: tac-test
-description: Use when building features with TAC — enforces TDD discipline. Write test first, watch it fail, write minimal code, watch it pass, refactor. Auto-invoked during AUTO stage.
+description: Auto-invoked during every TAC build — enforces TDD discipline. Every spawned agent writes tests first, runs them to fail, writes code, runs them to pass. Never manual.
 argument-hint: "[feature-name]"
 ---
 

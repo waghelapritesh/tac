@@ -110,6 +110,17 @@ RULES:
 3. Include mobile CSS if creating frontend files
 4. Do NOT modify files outside your task scope
 5. Do NOT touch shared files (urls.py, settings.py) — that's the integration wave
+
+TDD IS MANDATORY — follow this exact order:
+1. Write the TEST file first (test_{module}.py or {Component}.test.tsx)
+2. Run the test — confirm it FAILS (RED)
+3. Write the IMPLEMENTATION file
+4. Run the test — confirm it PASSES (GREEN)
+5. Refactor if needed — run test again — still PASSES
+6. Report back: "RED confirmed at {time}, GREEN confirmed at {time}"
+
+If you write implementation before tests, your output will be REJECTED.
+Test runner: {from stack profile — pytest for Python, vitest/jest for React}
 ```
 
 ## Wave Classification Rules
