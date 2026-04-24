@@ -46,4 +46,13 @@ else
 fi
 
 echo ""
-echo "TAC installed. Run /tac-init in your project to get started."
+echo "TAC installed. 6 commands available:"
+echo ""
+echo "  /tac-init   — Initialize TAC in a project"
+echo "  /tac-new    — Full pipeline: think -> build -> safe -> auto"
+echo "  /tac-think  — Explore an idea (ASK + DESIGN, no coding)"
+echo "  /tac-build  — Build a feature (smart gate + auto)"
+echo "  /tac-go     — Resume from where you stopped"
+echo "  /tac-safe   — Verify before deploy"
+echo ""
+echo "Run /tac-init in your project to get started."

@@ -5,32 +5,38 @@ A Claude Code plugin for solo developers shipping to live production.
 ## Install
 
 ```bash
+git clone https://github.com/waghelapritesh/tac.git ~/.claude/tac
 cd ~/.claude/tac && bash install.sh
 ```
 
-## Commands
+## 6 Commands. That's It.
 
-| Command | Description |
+| Command | What it does |
 |---------|-------------|
-| `/tac-new "idea"` | Full pipeline: ASK -> DESIGN -> SAFE -> AUTO |
-| `/tac-build "feature"` | Smart pipeline (skips ASK if clear) |
-| `/tac-ask` | Q&A only -- explore a problem |
-| `/tac-design` | Brainstorm + spec + plan |
-| `/tac-safe` | Verify against codebase |
-| `/tac-auto` | Execute existing plan |
+| `/tac-init` | Initialize TAC in a project (auto-detects stack) |
+| `/tac-new "idea"` | Full pipeline: think -> build -> safe -> auto |
+| `/tac-think "idea"` | Explore an idea (ASK + DESIGN, no coding) |
+| `/tac-build "feature"` | Build a feature (smart gate -> design -> safe -> auto) |
 | `/tac-go` | Resume from where you stopped |
-| `/tac-status` | Show progress |
-| `/tac-stack` | Manage tech stack profiles |
-| `/tac-profile` | Set model profile |
-| `/tac-init` | Initialize TAC in a project |
+| `/tac-safe` | Verify before deploy |
+
+## Everything Else is Automatic
+
+| Behavior | When | How |
+|----------|------|-----|
+| Stack detection | `/tac-init` | Scans codebase for Django/React/etc |
+| TDD | Every build | Agents write tests FIRST, verify fail, then code |
+| Parallel agents | 3+ independent tasks | Auto-spawns wave-based parallel execution |
+| Mobile CSS | Every frontend task | Desktop + responsive built simultaneously |
+| Safety checks | Before every deploy | File paths, services, core pages, DB schema |
+| Resume | Session breaks | `.tac/context/pending.json` saves exact state |
+| UI memory | User approves a design | Saved and reused for future pages |
 
 ## Pipeline
 
 ```
-ASK --> DESIGN --> SAFE --> AUTO
+THINK (ASK + DESIGN) --> SAFE --> AUTO
 ```
-
-Every feature passes through 4 stages. No skipping. Each has a safety gate.
 
 ## Philosophy
 
@@ -40,8 +46,23 @@ Every feature passes through 4 stages. No skipping. Each has a safety gate.
 
 ## Stack Profiles
 
-TAC learns your tech stack and adapts all scaffolding, code generation, and deploy patterns accordingly. Built-in stacks: `django-ims`, `react-full`. Add your own with `/tac-stack add`.
+Built-in: `django-ims`, `react-full`. Auto-detected during `/tac-init`.
+
+## Directory Structure
+
+```
+~/.claude/tac/
+  skills/       6 user commands (installed to ~/.claude/skills/)
+  internal/     7 auto-invoked behaviors (TDD, spawn, mobile, etc.)
+  workflows/    Detailed execution logic
+  hooks/        SessionStart status line
+  stacks/       Built-in stack profiles
+```
 
 ## Author
 
 Pritesh (Comprint)
+
+## License
+
+MIT
