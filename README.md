@@ -289,6 +289,8 @@ python deploy/deploy_tac_bot.py
 
 **Best for:** Teams, public products, or when you want TAC as a managed service.
 
+**Full docs & source:** [github.com/waghelapritesh/tac-bot](https://github.com/waghelapritesh/tac-bot)
+
 ### Comparison
 
 | Feature | Channel Plugin | TAC Bot |
