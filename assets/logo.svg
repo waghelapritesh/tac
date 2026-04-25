@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Background -->
+  <circle cx="100" cy="100" r="95" fill="#0f172a"/>
+
+  <!-- +^< merged into one unified mark -->
+  <!-- + left arm -->
+  <line x1="25" y1="100" x2="55" y2="100" stroke="#3b82f6" stroke-width="9" stroke-linecap="round"/>
+  <!-- + top/bottom -->
+  <line x1="40" y1="80" x2="40" y2="120" stroke="#3b82f6" stroke-width="9" stroke-linecap="round"/>
+
+  <!-- ^ center -->
+  <path d="M 68 125 L 100 55 L 132 125" fill="none" stroke="#8b5cf6" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- < right -->
+  <path d="M 175 70 L 148 100 L 175 130" fill="none" stroke="#06b6d4" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Subtle tagline -->
+  <text x="100" y="160" font-family="system-ui, sans-serif" font-size="9" fill="#64748b" text-anchor="middle" letter-spacing="3">THINK  ARCHITECT  CODE</text>
+</svg>

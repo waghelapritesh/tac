@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/logo.svg" alt="TAC Logo" width="120"/>
+</p>
+
 # TAC -- Think. Architect. Code.
 
 A Claude Code plugin system for solo developers shipping to live production. TAC combines adaptive Q&A, collaborative brainstorming, safety-first verification, and autonomous execution into one seamless pipeline.
