@@ -12,44 +12,37 @@ An AI coding agent plugin for solo developers shipping to live production. Works
 
 ## Quick Start
 
-### One-command install (recommended)
+### Install
 
+**Windows (PowerShell):**
+```powershell
+irm https://raw.githubusercontent.com/waghelapritesh/tac/main/install.ps1 | iex
+```
+
+**Mac / Linux:**
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/waghelapritesh/tac/main/install.sh)
+```
+
+**Or via npx (any platform):**
 ```bash
 npx tac-cc@latest
 ```
 
-Works on Mac, Linux, and Windows. Clones TAC, links skills to `~/.claude/skills/`, done.
-
-### Manual install
-
-```bash
-# Mac/Linux
-git clone https://github.com/waghelapritesh/tac.git ~/.claude/tac
-cd ~/.claude/tac && bash install.sh
-
-# Windows (PowerShell)
-git clone https://github.com/waghelapritesh/tac.git $env:USERPROFILE\.claude\tac
-cd $env:USERPROFILE\.claude\tac; .\install.ps1
-```
+All methods clone TAC and link skills to `~/.claude/skills/`.
 
 ### Then in your AI coding agent
 
-```bash
+```
 cd /path/to/your/project
-# Type:
 /tac-init
 ```
 
-### Update
+### Update / Uninstall
 
 ```bash
-npx tac-cc@latest    # re-run to update
-```
-
-### Uninstall
-
-```bash
-npx tac-cc@latest --uninstall
+npx tac-cc@latest              # update
+npx tac-cc@latest --uninstall  # remove
 ```
 
 ---
