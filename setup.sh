@@ -82,19 +82,19 @@ success "CLI built"
 
 # ─── Link globally ───────────────────────────
 
-info "Setting up 'tac-ai' command..."
+info "Setting up 'tac2' command..."
 
 # Create wrapper script (avoids conflict with Linux `tac` command)
-sudo tee /usr/local/bin/tac-ai >/dev/null << 'WRAPPER'
+sudo tee /usr/local/bin/tac2 >/dev/null << 'WRAPPER'
 #!/bin/bash
 node "$HOME/.claude/tac-cli/dist/cli.js" "$@"
 WRAPPER
-sudo chmod +x /usr/local/bin/tac-ai
-success "'tac-ai' command available globally"
+sudo chmod +x /usr/local/bin/tac2
+success "'tac2' command available globally"
 
 # Add bash alias so 'tac' also works (in new shells)
-if ! grep -q 'alias tac=tac-ai' "$HOME/.bashrc" 2>/dev/null; then
-  echo 'alias tac=tac-ai' >> "$HOME/.bashrc"
+if ! grep -q '# alias tac=tac2  # uncomment if you want 'tac' shortcut (overrides Linux tac command)' "$HOME/.bashrc" 2>/dev/null; then
+  echo '# alias tac=tac2  # uncomment if you want 'tac' shortcut (overrides Linux tac command)' >> "$HOME/.bashrc"
   success "Added 'tac' alias to .bashrc"
 fi
 
@@ -139,24 +139,24 @@ fi
 # ─── Verify ──────────────────────────────────
 
 echo ""
-VERSION=$(tac-ai --version 2>/dev/null || echo "unknown")
+VERSION=$(tac2 --version 2>/dev/null || echo "unknown")
 success "TAC v$VERSION installed successfully!"
 
 echo ""
 echo -e "  ${BOLD}Usage:${NC}"
 echo ""
-echo -e "  ${CYAN}tac-ai${NC}                 Interactive REPL"
-echo -e "  ${CYAN}tac-ai settings${NC}        Configure AI provider + API key"
-echo -e "  ${CYAN}tac-ai new \"idea\"${NC}      Full pipeline: ASK → DESIGN → SAFE → AUTO → SHIP"
-echo -e "  ${CYAN}tac-ai build \"feat\"${NC}    Smart build (skips Q&A if clear)"
-echo -e "  ${CYAN}tac-ai think \"idea\"${NC}    Explore only (ASK + DESIGN)"
-echo -e "  ${CYAN}tac-ai go${NC}              Resume from checkpoint"
-echo -e "  ${CYAN}tac-ai ship${NC}            Safety + review + PR"
-echo -e "  ${CYAN}tac-ai dashboard${NC}       Live progress TUI"
-echo -e "  ${CYAN}tac-ai do${NC}              Advanced operations"
-echo -e "  ${CYAN}tac-ai status${NC}          Current progress"
+echo -e "  ${CYAN}tac2${NC}                 Interactive REPL"
+echo -e "  ${CYAN}tac2 settings${NC}        Configure AI provider + API key"
+echo -e "  ${CYAN}tac2 new \"idea\"${NC}      Full pipeline: ASK → DESIGN → SAFE → AUTO → SHIP"
+echo -e "  ${CYAN}tac2 build \"feat\"${NC}    Smart build (skips Q&A if clear)"
+echo -e "  ${CYAN}tac2 think \"idea\"${NC}    Explore only (ASK + DESIGN)"
+echo -e "  ${CYAN}tac2 go${NC}              Resume from checkpoint"
+echo -e "  ${CYAN}tac2 ship${NC}            Safety + review + PR"
+echo -e "  ${CYAN}tac2 dashboard${NC}       Live progress TUI"
+echo -e "  ${CYAN}tac2 do${NC}              Advanced operations"
+echo -e "  ${CYAN}tac2 status${NC}          Current progress"
 echo ""
-echo -e "  ${DIM}First run: tac-ai settings (to set your API key)${NC}"
+echo -e "  ${DIM}First run: tac2 settings (to set your API key)${NC}"
 echo ""
 
 # ─── Telegram Bot (optional) ─────────────────
