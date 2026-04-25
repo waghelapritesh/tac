@@ -204,6 +204,87 @@ Confirm before resetting.
 - Create parent directories if they don't exist
 - After writing, display the updated value to confirm
 
+### 6. Login (Authentication)
+
+Subcommand: `login`
+
+This replaces the standalone `/tac-login` command. Manages API key authentication for AI providers.
+
+#### Arguments
+
+| Argument | Action |
+|----------|--------|
+| `login` | Interactive login — ask which provider(s) |
+| `login --claude` | Login to Claude (Anthropic) only |
+| `login --openai` | Login to OpenAI only |
+| `login --status` | Show current authentication status |
+
+#### Auth File
+
+Location: `~/.tac/auth.json`
+
+```json
+{
+  "providers": {
+    "claude": {
+      "api_key": "sk-ant-api03-...",
+      "verified_at": "2026-04-24T10:30:00Z",
+      "default_model": "opus"
+    },
+    "openai": {
+      "api_key": "sk-...",
+      "verified_at": "2026-04-24T10:31:00Z",
+      "default_model": "gpt-4o"
+    }
+  },
+  "default_provider": "claude"
+}
+```
+
+#### Login Flow
+
+1. Parse sub-arguments (`--claude`, `--openai`, `--status`, or interactive)
+2. Load existing `~/.tac/auth.json` if it exists
+3. For each selected provider:
+   - Ask the user for their API key (NEVER echo full key after input)
+   - Ask for default model preference
+   - Verify key with a minimal API call (max_tokens: 1)
+   - Store in auth.json with `verified_at` timestamp
+4. Set `default_provider` (ask if multiple providers configured)
+5. Write `~/.tac/auth.json` with 2-space indent
+6. Display confirmation with masked key (first 7 chars + "..." + last 4 chars)
+
+#### Claude Verification
+
+```bash
+curl -s -o /dev/null -w "%{http_code}" \
+  https://api.anthropic.com/v1/messages \
+  -H "x-api-key: THE_KEY" \
+  -H "anthropic-version: 2023-06-01" \
+  -H "content-type: application/json" \
+  -d '{"model":"claude-sonnet-4-20250514","max_tokens":1,"messages":[{"role":"user","content":"hi"}]}'
+```
+
+- HTTP 200: valid | HTTP 401: invalid | HTTP 429: rate-limited (accept) | Other: unverified
+
+#### OpenAI Verification
+
+```bash
+curl -s -o /dev/null -w "%{http_code}" \
+  https://api.openai.com/v1/models \
+  -H "Authorization: Bearer THE_KEY"
+```
+
+Same status code handling as Claude.
+
+#### Security Rules
+
+- NEVER store API keys in project-level files
+- NEVER log, echo, or display the full API key after initial input
+- NEVER commit auth.json to git
+- Always mask keys in display output
+- If auth.json already has a key, warn before overwriting
+
 ## Important Rules
 
 - NEVER modify settings without user confirmation

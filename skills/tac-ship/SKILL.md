@@ -25,15 +25,36 @@ Ship blocked: feature is not complete.
   Finish the implementation first, then run /tac-ship again.
 ```
 
-### Step 2: Run TAC Safe (auto-invoke)
+### Step 2: Run Safety Checks (inline)
 
-Invoke `/tac-safe` for the current feature.
+Run the full SAFE verification inline — do not delegate to `/tac-safe`, execute the checks directly:
+
+1. Read `.tac/history/{feature}-plan.json` — get list of files to check
+2. Read `.tac/stacks/{stack}.json` — get stack-specific safety rules
+3. For each file in the plan:
+   - **File paths exist** — every file referenced in the plan actually exists (Glob check)
+   - **Pattern compliance** — new code follows existing conventions (read similar modules first)
+   - **No hallucinated imports** — every import resolves to a real module (Grep check)
+4. **DB schema match** — tables/columns referenced in code exist in models
+5. **Core pages safe** — plan doesn't modify files used by daily-use pages (from stack safety.core_pages)
+6. **Service names correct** — systemctl units match real service names
+7. **Deploy targets verified** — host/port/user match known-good config
+8. **Tests pass** — run the test suite from the stack profile
+9. **Mobile CSS present** — frontend files have responsive breakpoints (if applicable)
+
+Output a check summary:
+```
+TAC Safe (inline):
+  {check}: {PASS|FAIL} — {detail}
+  ...
+  VERDICT: {PASS|BLOCK}
+```
 
 - If verdict is PASS: continue
 - If verdict is BLOCK:
   ```
-  Ship blocked: TAC Safe found issues.
-    {list of blocking issues from tac-safe output}
+  Ship blocked: Safety checks found issues.
+    {list of blocking issues}
   Fix these before shipping.
   ```
   Stop here. Do not continue to review.

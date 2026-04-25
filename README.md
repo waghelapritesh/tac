@@ -44,56 +44,64 @@ Every feature flows through 4 stages. No skipping. Each has a safety gate.
 
 ---
 
-## 20 Commands
+## Commands
 
-### Core Pipeline
+### Core Commands (what you type)
 
-| Command | What it does | When to use |
-|---------|-------------|-------------|
-| `/tac-init` | Initialize TAC in a project | First time in a new project |
-| `/tac-new "idea"` | Full pipeline: think -> safe -> auto | Starting from a vague idea |
-| `/tac-think "idea"` | Explore only (ASK + DESIGN, no coding) | When you want to brainstorm without committing |
-| `/tac-build "feature"` | Smart pipeline (skips ASK if clear) | When you know what you want |
-| `/tac-go` | Resume from where you stopped | Returning after a break |
-| `/tac-safe` | Verify before deploy | Manual safety check anytime |
+| Command | What it does |
+|---------|-------------|
+| `/tac-init` | Initialize TAC in a project |
+| `/tac-new "idea"` | Full auto pipeline: think -> safe -> auto -> ship |
+| `/tac-build "feature"` | Smart build (skips ASK if clear) |
+| `/tac-think "idea"` | Explore only (ASK + DESIGN) |
+| `/tac-go` | Resume from checkpoint |
+| `/tac-ship` | Safety + review + test + PR |
+| `/tac-settings` | Configure behavior, profiles, login |
+| `/tac-do` | Advanced operations (see table below) |
 
-### Developer Workflow
+### `/tac-do` Actions
 
-| Command | What it does | When to use |
-|---------|-------------|-------------|
-| `/tac-debug` | Systematic 4-phase root-cause analysis | Investigating a bug |
-| `/tac-review` | Code review (request or receive) | Before shipping or processing feedback |
-| `/tac-ship` | Run safety + review + create PR | Ready to merge |
-| `/tac-worktree` | Git worktree isolation per feature | Keeping features separate |
-| `/tac-spike` | Timeboxed experiments (2-5 tests) | Exploring unknowns before design |
-| `/tac-sketch` | HTML mockup variants (2-3 layouts) | Making UI decisions visually |
+| Action | What it does |
+|--------|-------------|
+| `/tac-do debug` | Systematic 4-phase root-cause analysis |
+| `/tac-do spike` | Timeboxed experiments with verdicts |
+| `/tac-do sketch` | 2-3 HTML mockup variants for UI decisions |
+| `/tac-do roadmap` | Milestone and phase lifecycle |
+| `/tac-do todo` | Backlog, notes, seeds capture |
+| `/tac-do undo` | Safe git revert with dependency check |
+| `/tac-do stats` | Feature, code, session metrics |
+| `/tac-do health` | Project diagnostics + auto-fix |
+| `/tac-do forensics` | Post-mortem for failed features |
+| `/tac-do test-ui` | Playwright visual testing + auto-fix |
+| `/tac-do review` | Code review (request/receive) |
+| `/tac-do worktree` | Git worktree isolation |
 
-### Project Management
+### Auto-Wired (TAC runs these for you)
 
-| Command | What it does | When to use |
-|---------|-------------|-------------|
-| `/tac-roadmap` | Milestones, phases, success criteria | Multi-phase project planning |
-| `/tac-todo` | Backlog, notes, seeds with auto-routing | Capturing ideas and tasks |
-| `/tac-undo` | Safe git revert with dependency checks | Rolling back changes |
-
-### Operations
-
-| Command | What it does | When to use |
-|---------|-------------|-------------|
-| `/tac-forensics` | Post-mortem for failed features | Understanding what went wrong |
-| `/tac-health` | Project health check + auto-fix | Diagnosing TAC state issues |
-| `/tac-stats` | Feature, code, session, cost metrics | Reviewing project progress |
-| `/tac-login` | Authenticate with AI providers | Linking API keys |
-| `/tac-settings` | Configure behavior and model profiles | Tuning TAC |
+| Skill | Auto-triggers when |
+|-------|-------------------|
+| spike | DESIGN finds unknowns |
+| sketch | Feature has new UI page |
+| worktree | AUTO starts |
+| test-ui | Wave commits frontend files |
+| debug | Tests fail during AUTO |
+| review | All waves complete |
+| ship | Review passes (if auto-ship on) |
+| roadmap | Feature completes |
+| todo/seeds | Pipeline starts |
+| health | Session starts |
+| stats | Feature completes |
+| forensics | Feature fails |
 
 ---
 
 ## Everything Else is Automatic
 
-You don't invoke these -- TAC does it for you.
+You don't invoke these -- TAC's auto-wire engine handles them at the right pipeline moment.
 
 | Behavior | What happens | When |
 |----------|-------------|------|
+| **Auto-Wire** | Triggers the right skills at each pipeline transition | Every stage change |
 | **Auto-TDD** | Every agent writes tests FIRST (RED), then code (GREEN) | Every build task |
 | **Auto-Spawn** | Parallel agents for independent tasks (wave-based) | Plan has 3+ tasks |
 | **Auto-Mobile** | Desktop + responsive CSS built simultaneously | Every frontend task |
@@ -101,6 +109,12 @@ You don't invoke these -- TAC does it for you.
 | **Auto-Safe** | File paths, services, core pages, DB schema verified | Before every deploy |
 | **Auto-Resume** | Exact checkpoint saved to `.tac/context/pending.json` | Session break or interrupt |
 | **UI Memory** | Design patterns saved when you approve a page's look | User says "looks good" |
+
+Progress is shown as a persistent bar at each transition:
+```
+TAC: price-export
+[████████████░░░░] AUTO — Wave 3/4 | test-ui: running | 8 files changed
+```
 
 ---
 
@@ -239,16 +253,31 @@ Configure via `/tac-login` or `/tac-settings`. Mix providers per stage (e.g., Op
 
 ```
 ~/.claude/tac/
-  skills/           8 user-facing commands (symlinked to ~/.claude/skills/)
+  skills/           User-facing commands (symlinked to ~/.claude/skills/)
     tac-init/         Initialize project
     tac-new/          Full pipeline orchestrator
     tac-think/        ASK + DESIGN (explore only)
     tac-build/        Smart gate + pipeline
     tac-go/           Resume from checkpoint
-    tac-safe/         Pre-deploy verification
-    tac-login/        Authenticate with Claude/OpenAI
-    tac-settings/     Configure behavior + profiles
-  internal/         7 auto-invoked behaviors (not installed as commands)
+    tac-ship/         Safety + review + test + PR
+    tac-safe/         Pre-deploy verification (standalone)
+    tac-settings/     Configure behavior, profiles, login
+    tac-login/        Alias for /tac-settings login
+    tac-do/           Advanced operations router
+    tac-debug/        Systematic root-cause analysis
+    tac-review/       Code review (request/receive)
+    tac-worktree/     Git worktree isolation
+    tac-spike/        Timeboxed experiments
+    tac-sketch/       HTML mockup variants
+    tac-roadmap/      Milestone/phase management
+    tac-todo/         Backlog, notes, seeds
+    tac-undo/         Safe git revert
+    tac-forensics/    Post-mortem analysis
+    tac-health/       Project health diagnostics
+    tac-stats/        Feature/code/cost metrics
+    tac-test-ui/      Visual UI testing
+  internal/         Auto-invoked behaviors (not installed as commands)
+    tac-autowire/     Pipeline transition engine (auto-triggers skills)
     tac-ask/          Adaptive Q&A engine
     tac-design/       Brainstorm + spec + plan
     tac-spawn/        Wave-based parallel execution
@@ -338,6 +367,15 @@ python deploy/deploy_tac_bot.py
 ---
 
 ## Changelog
+
+### v5.0.0 (2026-04-25)
+- Auto-wire engine: 12 skills auto-trigger at pipeline transitions
+- `/tac-do <action>` catch-all command for advanced operations
+- 6 core commands replace 20 — rest are auto-wired or accessed via `/tac-do`
+- `/tac-ship` now runs full SAFE checks inline (no delegation)
+- `/tac-settings login` absorbs `/tac-login` (kept as alias)
+- Progress bar at every pipeline transition
+- Auto-triggers: spike (unknowns), sketch (new UI), worktree (AUTO start), test-ui (frontend waves), debug (test failures), review (waves complete), ship (review passes), roadmap/todo/stats/health/forensics (lifecycle events)
 
 ### v4.0.0 (2026-04-25)
 - 12 new skills bringing total to 20 commands

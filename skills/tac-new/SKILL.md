@@ -165,6 +165,17 @@ When the DESIGN stage produces a plan with 3+ independent tasks, TAC **automatic
 
 The tac-spawn skill contains the full wave classification and agent prompt template. This orchestrator invokes it automatically when the plan qualifies.
 
+## Auto-Wiring
+
+At each stage transition, invoke the `tac-autowire` internal skill to determine and run any auto-triggered skills. See `internal/tac-autowire/SKILL.md` for the full decision table.
+
+Progress is shown as a persistent progress bar updated at each transition:
+- `[░░░░░░░░░░░░░░░░] ASK — asking question 1/5`
+- `[████░░░░░░░░░░░░] DESIGN — generating approaches`
+- `[████████░░░░░░░░] SAFE — verifying (test-ui: background)`
+- `[████████████░░░░] AUTO — Wave 3/4 building`
+- `[████████████████] DONE — PR created, roadmap advanced`
+
 ## Error Handling
 
 - If the user interrupts at any point, save current progress to pending.json immediately

@@ -59,6 +59,17 @@ If the feature already has a completed DESIGN and the design file is less than 2
 3. Check `updated_at` is within 24 hours
 4. Display: "Design is fresh and verified. AUTO stage coming in TAC v2."
 
+## Auto-Wiring
+
+At each stage transition, invoke the `tac-autowire` internal skill to determine and run any auto-triggered skills. See `internal/tac-autowire/SKILL.md` for the full decision table.
+
+Progress is shown as a persistent progress bar updated at each transition:
+- `[░░░░░░░░░░░░░░░░] ASK — asking question 1/5`
+- `[████░░░░░░░░░░░░] DESIGN — generating approaches`
+- `[████████░░░░░░░░] SAFE — verifying (test-ui: background)`
+- `[████████████░░░░] AUTO — Wave 3/4 building`
+- `[████████████████] DONE — PR created, roadmap advanced`
+
 ## State Management
 
 All state updates follow the same pattern as tac-new:

@@ -6,6 +6,8 @@ argument-hint: "[--claude|--openai|--status]"
 
 # TAC Login — AI Provider Authentication
 
+> **Note:** This command is an alias for `/tac-settings login`. Both commands do the same thing. Prefer `/tac-settings login` for consistency.
+
 Manages API key authentication for Claude and OpenAI providers. Keys are stored ONLY in the global `~/.tac/auth.json` file (never in project directories).
 
 ## Argument Routing
