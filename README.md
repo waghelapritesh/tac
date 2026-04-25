@@ -8,17 +8,44 @@ A Claude Code plugin system for solo developers shipping to live production. TAC
 
 ## Quick Start
 
-```bash
-# Clone
-git clone https://github.com/waghelapritesh/tac.git ~/.claude/tac
+### One-command install (recommended)
 
-# Install (creates symlinks to ~/.claude/skills/)
+```bash
+npx tac-cc@latest
+```
+
+Works on Mac, Linux, and Windows. Clones TAC, links skills to `~/.claude/skills/`, done.
+
+### Manual install
+
+```bash
+# Mac/Linux
+git clone https://github.com/waghelapritesh/tac.git ~/.claude/tac
 cd ~/.claude/tac && bash install.sh
 
-# Initialize in your project
+# Windows (PowerShell)
+git clone https://github.com/waghelapritesh/tac.git $env:USERPROFILE\.claude\tac
+cd $env:USERPROFILE\.claude\tac; .\install.ps1
+```
+
+### Then in Claude Code
+
+```bash
 cd /path/to/your/project
-# Then in Claude Code:
+# Type:
 /tac-init
+```
+
+### Update
+
+```bash
+npx tac-cc@latest    # re-run to update
+```
+
+### Uninstall
+
+```bash
+npx tac-cc@latest --uninstall
 ```
 
 ---

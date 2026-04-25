@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="95" fill="#0f172a" stroke="#3b82f6" stroke-width="3"/>
+
+  <!-- TAC letters stylized as pipeline stages -->
+  <!-- T - Think -->
+  <text x="38" y="125" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="72" fill="#3b82f6">T</text>
+  <!-- A - Architect -->
+  <text x="78" y="125" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="72" fill="#8b5cf6">A</text>
+  <!-- C - Code -->
+  <text x="122" y="125" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="72" fill="#06b6d4">C</text>
+
+  <!-- Pipeline dots below -->
+  <circle cx="58" cy="148" r="4" fill="#3b82f6"/>
+  <line x1="62" y1="148" x2="93" y2="148" stroke="#4b5563" stroke-width="2"/>
+  <circle cx="97" cy="148" r="4" fill="#8b5cf6"/>
+  <line x1="101" y1="148" x2="132" y2="148" stroke="#4b5563" stroke-width="2"/>
+  <circle cx="136" cy="148" r="4" fill="#06b6d4"/>
+
+  <!-- Subtitle -->
+  <text x="100" y="170" font-family="system-ui, sans-serif" font-size="10" fill="#94a3b8" text-anchor="middle" letter-spacing="4">THINK. ARCHITECT. CODE.</text>
+</svg>

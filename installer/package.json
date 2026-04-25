@@ -1,0 +1,15 @@
+{
+  "name": "tac-cc",
+  "version": "5.1.0",
+  "description": "TAC (Think. Architect. Code.) — one-command installer for Claude Code",
+  "bin": {
+    "tac-cc": "./bin/install.js"
+  },
+  "keywords": ["tac", "claude-code", "ai", "developer-tools", "pipeline"],
+  "author": "Pritesh Waghela",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/waghelapritesh/tac.git"
+  }
+}

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 100" width="240" height="100">
+  <!-- Pure symbol: +^< as a horizontal wordmark-style logo -->
+
+  <!-- + -->
+  <line x1="20" y1="50" x2="50" y2="50" stroke="#3b82f6" stroke-width="8" stroke-linecap="round"/>
+  <line x1="35" y1="35" x2="35" y2="65" stroke="#3b82f6" stroke-width="8" stroke-linecap="round"/>
+
+  <!-- ^ -->
+  <path d="M 75 70 L 100 25 L 125 70" fill="none" stroke="#8b5cf6" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- < -->
+  <path d="M 165 30 L 140 50 L 165 70" fill="none" stroke="#06b6d4" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- TAC text -->
+  <text x="195" y="58" font-family="system-ui, sans-serif" font-weight="900" font-size="28" fill="#e2e8f0" letter-spacing="2">TAC</text>
+</svg>
