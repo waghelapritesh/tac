@@ -22,7 +22,13 @@ Resume work from where you left off.
    - `context` — any saved context (partial answers, design notes, etc.)
    - `paused_at` — timestamp of the pause
 
-3. **Display the resume summary**:
+3. **Restore conversation context**:
+   - Check if `pending.json` has a `context_file` field
+   - If yes: read `.tac/context/{feature-slug}.md` and inject as conversation context so all prior decisions are preserved
+   - This ensures the LLM knows every question already answered, every design decision made, every file touched, and any blockers — no re-asking
+   - If `context_file` is missing or the file doesn't exist: continue without context (backward-compatible)
+
+4. **Display the resume summary**:
 
 ```
 Resuming: {feature_name}
@@ -33,14 +39,14 @@ Last completed: {last_action}
 Next step:      {next_action}
 ```
 
-4. **Ask the user to confirm**: "Continue from this checkpoint? (yes / no / restart)"
+5. **Ask the user to confirm**: "Continue from this checkpoint? (yes / no / restart)"
    - If "restart" — clear pending.json and route to /tac-new
    - If "no" — stop
 
-5. **Route to the appropriate skill based on stage**:
+6. **Route to the appropriate skill based on stage**:
    - **ASK** — Follow the tac-ask workflow. Pass saved context so questions aren't repeated.
    - **DESIGN** — Follow the tac-design workflow. Pass saved context (partial spec, decisions made).
    - **SAFE** — Display: "SAFE stage coming in TAC v2. Your design is saved in .tac/history/{feature_id}/DESIGN.md"
    - **AUTO** — Display: "AUTO stage coming in TAC v2. Your design is saved in .tac/history/{feature_id}/DESIGN.md"
 
-6. **Reference the resume workflow** at `$HOME/.claude/tac/workflows/resume.md` for detailed resume procedures.
+7. **Reference the resume workflow** at `$HOME/.claude/tac/workflows/resume.md` for detailed resume procedures.

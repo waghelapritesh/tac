@@ -140,6 +140,58 @@ This skill is NOT user-invocable. It is called by:
 - `tac-build` — at each stage transition
 - `tac-go` — when resuming, to check if any auto-triggers were missed
 
+## Context Persistence (at every stage transition)
+
+After every stage transition (ASK complete, DESIGN complete, SAFE complete, each AUTO wave), invoke `tac-context` to save conversation context:
+
+1. Call `tac-context` save with the current feature's decisions, Q&A history, design choices, and files touched
+2. Update `.tac/context/pending.json` to include the `context_file` field pointing to `.tac/context/{feature-slug}.md`
+3. This ensures /tac-go can restore full context on resume
+
+## Learnings Capture (at trigger points)
+
+At specific trigger points, auto-capture learnings to `.tac/learnings.json` via `tac-learn`:
+
+| Trigger | Learning Type | What to Capture |
+|---------|--------------|-----------------|
+| SAFE catches an issue | `gotcha` | The issue and how to avoid it |
+| User rejects a sketch variant | `preference` | Which variant was rejected and what was preferred |
+| Debug finds a root cause | `pattern` | The root cause and how to recognize it |
+| Forensics identifies a lesson | `gotcha` | The lesson learned from the failure |
+
+Process:
+1. Detect the trigger event
+2. Extract a concise, actionable lesson statement
+3. Call `tac-learn` to save it (dedup check is handled by tac-learn)
+4. Display: "Learning captured: {lesson}"
+
+## Learnings Injection
+
+When spawning agents (via `tac-spawn`), load `.tac/learnings.json` and inject relevant learnings into the agent's system prompt:
+
+1. Load all learnings from `.tac/learnings.json`
+2. Filter by keyword relevance to the current task (match against task description, file names, feature name)
+3. Always include `gotcha` type learnings
+4. Include `preference` learnings when building UI components
+5. Include `pattern` learnings when keywords match
+6. Pass filtered learnings to `tac-spawn` for injection into agent prompts
+
+## Cost Tracking (after each API call)
+
+After each Claude API call (ASK question, DESIGN approach, SAFE verify), invoke `tac-costs` to record usage:
+
+1. Extract token counts and model from the API response
+2. Call `tac-costs` with: `input_tokens`, `output_tokens`, `model`, `stage`
+3. `tac-costs` calculates cost and updates `.tac/costs.json`
+4. This data is read by `tac-stats` to display the Cost Dashboard
+
+Cost rates (per 1K tokens):
+- opus: $0.015 input / $0.075 output
+- sonnet: $0.003 input / $0.015 output
+- haiku: $0.0008 input / $0.004 output
+
+AUTO stage has zero TAC API cost (runs on user's Claude Code instance).
+
 ## Error Handling
 
 - If any auto-triggered skill fails: log the error, display a warning, but do NOT block the pipeline

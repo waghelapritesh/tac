@@ -137,6 +137,9 @@ RULES:
 4. Do NOT modify files outside your task scope
 5. Do NOT touch shared files (urls.py, settings.py) — that's the integration wave
 
+PROJECT LEARNINGS:
+{loaded from .tac/learnings.json, filtered by keyword relevance to this task}
+
 TDD IS MANDATORY — follow this exact order:
 1. Write the TEST file first (test_{module}.py or {Component}.test.tsx)
 2. Run the test — confirm it FAILS (RED)

@@ -73,6 +73,37 @@ Cost (estimated)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
+### 3.5. Cost Dashboard
+
+Read `.tac/costs.json` (produced by `tac-costs` internal skill). If the file exists and has data, append a cost dashboard section after the main stats:
+
+```
+Cost Dashboard
+
+  Current feature: add payments page
+    ASK:    $0.12 (4 calls, 6K tokens, opus)
+    DESIGN: $0.28 (2 calls, 14K tokens, opus)
+    SAFE:   $0.03 (1 call, 5K tokens, haiku)
+    AUTO:   $0.00 (runs on your Claude Code)
+    Total:  $0.43
+
+  Today:      $3.40 (8 features, 125K tokens)
+  This month: $12.40 (28 features, 450K tokens)
+
+  Top cost drivers:
+    1. DESIGN stage: 65% of spend (opus is expensive)
+    2. ASK stage: 28% of spend
+    3. SAFE stage: 7% of spend
+```
+
+**Top cost drivers calculation:**
+1. Sum all `cost_cents` across all features grouped by stage name
+2. Sort descending by total cost
+3. Calculate percentage of overall total for each stage
+4. Display top 3 with a note about why (e.g., "opus is expensive" for high-cost stages)
+
+**If `.tac/costs.json` doesn't exist or is empty:** omit the Cost Dashboard section entirely.
+
 If `--full` is passed, add a per-feature breakdown table:
 
 ```

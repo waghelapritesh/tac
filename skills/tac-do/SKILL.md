@@ -18,12 +18,13 @@ Routes to the appropriate internal or external TAC skill based on the first argu
 | `roadmap` | tac-roadmap | Milestone and phase management |
 | `todo` | tac-todo | Backlog, notes, seeds, promotion |
 | `undo` | tac-undo | Safe git revert with dependency checks |
-| `stats` | tac-stats | Feature, code, session, cost metrics |
+| `stats` | tac-stats | Feature, code, session metrics (reads .tac/costs.json) |
 | `health` | tac-health | Project health check + auto-fix |
 | `forensics` | tac-forensics | Post-mortem for failed features |
 | `test-ui` | tac-test-ui | Visual UI testing |
 | `review` | tac-review | Code review (request or receive) |
 | `worktree` | tac-worktree | Git worktree isolation per feature |
+| `learn` | tac-learn | View, add, or remove project learnings |
 
 ## Sub-Actions
 
@@ -33,6 +34,7 @@ Some actions accept sub-commands passed as additional arguments:
 - `todo add|list|done|promote|note|seed`
 - `review request|receive`
 - `worktree create|status|merge|cleanup`
+- `learn add|remove`
 
 ## No-Argument Auto-Detection
 
@@ -77,6 +79,7 @@ When no action is given and no auto-suggestion matches, show:
   /tac-do test-ui     Playwright visual testing + auto-fix
   /tac-do review      Code review (request/receive)
   /tac-do worktree    Git worktree isolation
+  /tac-do learn       View, add, or remove project learnings
 
   Most of these run automatically during the pipeline.
   Use manually when you need them outside the pipeline.
