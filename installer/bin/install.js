@@ -16,6 +16,8 @@ const claudeDir = path.join(home, '.claude');
 const tacDir = path.join(claudeDir, 'tac');
 const skillsDir = path.join(claudeDir, 'skills');
 const REPO = 'https://github.com/waghelapritesh/tac.git';
+const CLI_REPO = 'https://github.com/waghelapritesh/tac-cli.git';
+const cliDir = path.join(claudeDir, 'tac-cli');
 
 // Colors
 const c = {
@@ -161,6 +163,53 @@ function linkSkills() {
   }
 }
 
+function installCLI() {
+  info('Installing TAC CLI (standalone runtime)...');
+
+  if (fs.existsSync(cliDir)) {
+    // Update
+    try {
+      run('git pull origin main', { cwd: cliDir });
+      success('Updated TAC CLI');
+    } catch {
+      warn('Git pull failed for CLI — trying fresh clone...');
+      fs.rmSync(cliDir, { recursive: true, force: true });
+      run(`git clone ${CLI_REPO} "${cliDir}"`);
+      success('Fresh CLI clone complete');
+    }
+  } else {
+    run(`git clone ${CLI_REPO} "${cliDir}"`);
+    success('Cloned TAC CLI');
+  }
+
+  // Install dependencies and build
+  info('Installing CLI dependencies...');
+  run('npm install', { cwd: cliDir });
+  success('Dependencies installed');
+
+  info('Building CLI...');
+  run('npx tsup', { cwd: cliDir });
+  success('CLI built');
+
+  // Install globally via npm link
+  info('Linking `tac` command globally...');
+  try {
+    run('npm link', { cwd: cliDir });
+    success('`tac` command available globally');
+  } catch {
+    // npm link may fail without sudo on some systems
+    warn('Could not link globally. You can run TAC with:');
+    warn(`  node ${path.join(cliDir, 'dist', 'cli.js')}`);
+    warn('Or add to PATH manually.');
+  }
+
+  // Verify
+  const tacCheck = run('tac --version', { allowFail: true });
+  if (tacCheck) {
+    success(`TAC CLI v${tacCheck} ready`);
+  }
+}
+
 function getVersion() {
   const readmePath = path.join(tacDir, 'README.md');
   if (fs.existsSync(readmePath)) {
@@ -184,18 +233,18 @@ function showSummary() {
   log(`  ${c.dim}Skills:${c.reset}   ${skillCount} commands`);
   log(`  ${c.dim}Location:${c.reset} ${tacDir}`);
   log('');
-  log(`  ${c.bold}Quick Start:${c.reset}`);
-  log(`  ${c.dim}1.${c.reset} Open Claude Code in your project`);
-  log(`  ${c.dim}2.${c.reset} Type ${c.cyan}/tac-init${c.reset} to initialize TAC`);
-  log(`  ${c.dim}3.${c.reset} Type ${c.cyan}/tac-new "your feature idea"${c.reset} to start building`);
+  log(`  ${c.bold}Two ways to use TAC:${c.reset}`);
   log('');
-  log(`  ${c.bold}Core Commands:${c.reset}`);
-  log(`  ${c.cyan}/tac-init${c.reset}       Initialize TAC in a project`);
+  log(`  ${c.bold}1. Standalone CLI${c.reset} (like GSD-2)`);
+  log(`  ${c.cyan}tac${c.reset}             Interactive REPL`);
+  log(`  ${c.cyan}tac new "idea"${c.reset}  Full auto pipeline`);
+  log(`  ${c.cyan}tac build${c.reset}       Smart build`);
+  log(`  ${c.cyan}tac dashboard${c.reset}   Live progress TUI`);
+  log('');
+  log(`  ${c.bold}2. AI Agent Plugin${c.reset} (Claude Code, Gemini CLI, etc.)`);
+  log(`  ${c.cyan}/tac-init${c.reset}       Initialize in your project`);
   log(`  ${c.cyan}/tac-new${c.reset}        Full auto pipeline`);
-  log(`  ${c.cyan}/tac-build${c.reset}      Smart build (skips Q&A if clear)`);
-  log(`  ${c.cyan}/tac-think${c.reset}      Explore only (no coding)`);
-  log(`  ${c.cyan}/tac-go${c.reset}         Resume from checkpoint`);
-  log(`  ${c.cyan}/tac-ship${c.reset}       Safety + review + PR`);
+  log(`  ${c.cyan}/tac-build${c.reset}      Smart build`);
   log(`  ${c.cyan}/tac-do${c.reset}         Advanced operations`);
   log('');
   log(`  ${c.dim}Docs: https://github.com/waghelapritesh/tac${c.reset}`);
@@ -227,6 +276,11 @@ async function main() {
       }
       success(`Removed ${removed} skill links`);
     }
+    if (fs.existsSync(cliDir)) {
+      run('npm unlink', { cwd: cliDir, allowFail: true });
+      fs.rmSync(cliDir, { recursive: true, force: true });
+      success('Removed ~/.claude/tac-cli/');
+    }
     if (fs.existsSync(tacDir)) {
       fs.rmSync(tacDir, { recursive: true, force: true });
       success('Removed ~/.claude/tac/');
@@ -239,6 +293,7 @@ async function main() {
   ensureDirs();
   cloneOrUpdate();
   linkSkills();
+  installCLI();
   showSummary();
 }
 
