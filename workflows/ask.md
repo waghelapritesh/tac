@@ -1,136 +1,224 @@
-# TAC ASK Workflow — Detailed Phases
+# TAC ASK Workflow — GSD-1 Style Gray Area Discovery
 
-This workflow drives the ASK stage of TAC. The goal is to go from a vague feature idea to a set of captured decisions sufficient to begin design.
-
----
-
-## Phase 1: Codebase Scan
-
-**Goal**: Understand the existing system before asking a single question.
-
-1. Read `.tac/project.json` to learn the stack (language, framework, DB, services)
-2. Read `.tac/stacks/{stack}.json` for stack-specific conventions
-3. Based on the feature description, identify likely touchpoints:
-   - Search for related modules, routes, models, APIs, templates
-   - Read key files to understand current patterns
-   - Note directory structure and naming conventions
-4. Build an internal context map:
-   - What exists today that relates to this feature?
-   - What patterns does this codebase follow?
-   - What are the integration points?
-
-### Anti-Hallucination Guardrails
-
-- **Every claim about the codebase MUST cite a file path.** Example: "The app uses Django REST Framework serializers (see `app/api/serializers.py`)"
-- If you cannot point to a specific file or line, prefix with "I could not verify this in the codebase"
-- Never say "the codebase probably has..." — either you found it or you didn't
-- When unsure about a pattern, read more files before making claims
-- If a file you expected doesn't exist, say so explicitly
+This workflow drives the ASK stage of TAC. Instead of open-ended Q&A, it identifies gray areas in the feature, presents structured 4-option questions, and captures decisions that feed directly into DESIGN.
 
 ---
 
-## Phase 2: Adaptive Q&A
+## Philosophy
 
-**Goal**: Fill knowledge gaps that code alone cannot answer.
+**User = visionary. TAC = builder.**
 
-### Rules
+The user knows: how they imagine it working, what it should feel like, what's essential vs nice-to-have.
+TAC handles: codebase patterns, technical risks, implementation approach.
 
-1. **One question at a time.** Never ask multiple questions in one message.
-2. **Multiple choice preferred.** Offer A/B/C/D options when the answer space is bounded. Include an "Other" option when the list isn't exhaustive.
-3. **Don't ask what code can answer.** Before asking "What database do you use?", check config files. Before asking "How is auth handled?", read the auth module.
-4. **Build on previous answers.** Each question should narrow the solution space based on what you've learned.
-5. **Explain why you're asking.** Brief context helps the user give better answers. Example: "I found two patterns for API endpoints in this codebase — REST ViewSets and function views. Which should this feature use?"
-
-### Question Categories (in rough priority order)
-
-- **Scope**: What's in, what's out?
-- **Users**: Who uses this? What roles?
-- **Behavior**: What happens when X? Edge cases?
-- **Integration**: How does this connect to existing features?
-- **Constraints**: Performance, security, compatibility requirements?
-- **Priority**: Must-have vs nice-to-have?
-
-### Adaptive Branching
-
-- If the user's answer reveals complexity, drill deeper before moving on
-- If the user's answer is simple and clear, move to the next category
-- If the user says "you decide" or "whatever's standard", pick the option that matches existing codebase patterns and state your choice
+Ask about vision and implementation choices. Don't ask what code can answer.
 
 ---
 
-## Phase 3: Capture Decisions
+## Phase 1: Load Context
 
-**Goal**: Record every Q&A exchange as a structured decision.
-
-For each question-answer pair, capture:
-
-```json
-{
-  "question": "The question asked",
-  "answer": "The user's answer",
-  "rationale": "Why this matters for the design",
-  "evidence": ["path/to/relevant/file.py"],
-  "decided_at": "ISO timestamp"
-}
 ```
-
-When all questions are answered, compile into `.tac/history/{feature-slug}.json`:
-
-```json
-{
-  "feature": "feature-name",
-  "slug": "feature-slug",
-  "description": "One-line summary",
-  "started_at": "ISO timestamp",
-  "completed_at": "ISO timestamp",
-  "codebase_context": {
-    "files_scanned": ["list of files read during Phase 1"],
-    "patterns_found": ["pattern descriptions with file citations"],
-    "integration_points": ["where this feature connects to existing code"]
-  },
-  "decisions": [
-    { "question": "...", "answer": "...", "rationale": "...", "evidence": [] }
-  ],
-  "summary": "Paragraph summarizing what will be built and key decisions"
-}
+1. Read .tac/project.json → stack, project name, provider
+2. Read .tac/stacks/{stack}.json → conventions, safety rules, deploy targets
+3. Read prior feature history from .tac/history/ → don't re-ask decided questions
 ```
 
 ---
 
-## Phase 4: Gate Check
+## Phase 2: Codebase Scout
 
-**Goal**: Verify readiness to move to the design stage.
+**Goal**: Lightweight scan to inform gray area identification. ~10% context budget.
 
-Ask yourself these questions:
+```
+1. Extract key terms from feature description
+2. Grep for related files (models, APIs, templates, components)
+3. Read 3-5 most relevant files to understand existing patterns
+4. Identify:
+   - Reusable assets (existing components, utilities)
+   - Established patterns (state management, API style, deploy approach)
+   - Integration points (where new code connects)
+```
 
-1. **Scope clear?** Can I list exactly what's in and what's out?
-2. **Integration understood?** Do I know which existing files/modules this touches?
-3. **Patterns identified?** Do I know which codebase patterns to follow?
-4. **Edge cases covered?** Have I asked about the non-obvious scenarios?
-5. **No hallucinations?** Is every codebase claim backed by a file path I actually read?
+**Anti-hallucination**: Every file reference must come from a real Glob/Read/Grep result.
 
-If any answer is "no", go back to Phase 2 and ask more questions.
+---
 
-If all answers are "yes":
-1. Present a summary of all decisions to the user for confirmation
-2. Save to `.tac/history/{feature-slug}.json`
-3. Update `.tac/state.json`:
-   ```json
-   {
-     "feature": "feature-name",
-     "stage": "ASK",
-     "status": "complete"
-   }
+## Phase 3: Gray Area Identification
+
+**Goal**: Identify implementation decisions the user should weigh in on.
+
+Gray areas are decisions that could go multiple ways and would change the result.
+
+**How to identify:**
+1. Read the feature description
+2. Understand the domain:
+   - Something users SEE → visual presentation, interactions, states matter
+   - Something users CALL → interface contracts, responses, errors matter
+   - Something users RUN → invocation, output, behavior modes matter
+   - Something being ORGANIZED → criteria, grouping, handling exceptions matter
+3. Generate 3-5 concrete gray areas specific to THIS feature
+4. Skip anything already decided in prior features or discoverable from code
+
+**Good gray areas**: "Layout style — cards vs list vs timeline?"
+**Bad gray areas**: "UI" (too generic), "Database schema" (TAC handles this)
+
+**What TAC handles (don't ask)**:
+- Technical implementation details
+- Architecture patterns (follow existing codebase)
+- Performance optimization
+- File structure (stack profile defines this)
+
+---
+
+## Phase 4: Present Gray Areas
+
+Present the feature boundary and gray areas to the user.
+
+```
+TAC ASK: {feature description}
+Domain: {what this feature delivers}
+
+Carrying forward:
+- {any prior decisions that apply}
+
+Which areas do you want to discuss?
+```
+
+List 3-5 gray areas with brief descriptions and code context annotations:
+
+```
+☐ Layout style — Cards vs list vs timeline?
+  (Card component exists at src/components/Card.tsx — reusing keeps consistency)
+
+☐ Loading behavior — Infinite scroll or pagination?
+  (useInfiniteQuery hook already set up)
+
+☐ Empty state — What shows when no data exists?
+
+☐ Content density — Full detail vs compact preview?
+```
+
+User selects which to discuss.
+
+---
+
+## Phase 5: Structured Discussion
+
+**For each selected gray area:**
+
+1. **Announce**: "Let's talk about {area}."
+
+2. **Ask 4 questions using AskUserQuestion** (or plain text if AskUserQuestion unavailable):
+   - Offer 3-4 concrete options (not generic A/B/C — use real descriptions)
+   - Highlight recommended option with brief reasoning
+   - Annotate options with code context when relevant
+   - Include "You decide" when reasonable (captures TAC discretion)
+
+   Example:
    ```
-4. Tell the user: "ASK stage complete. Run `/tac-plan` when ready to design."
+   How should posts be displayed?
+   
+   A) Cards (reuses existing Card component — consistent with Messages page)
+   B) List rows (simpler, familiar table pattern from Parts list)  
+   C) Timeline (new component needed — more visual but more work)
+   D) You decide (TAC picks based on existing patterns)
+   ```
+
+3. **After each answer, adapt**: use the answer to inform the next question.
+
+4. **After 4 questions per area**, ask: "More about {area}, or move to next?"
+
+5. **Scope creep guard**: If user mentions something outside the feature scope:
+   ```
+   "{Feature X} sounds like a separate feature — I'll note it for later.
+   Back to {current area}: {return to current question}"
+   ```
+   Track deferred ideas internally.
 
 ---
 
-## Anti-Hallucination Checklist (apply throughout)
+## Phase 6: Capture Decisions
 
-- [ ] Every file reference points to a real file I read with the Read tool
-- [ ] Every pattern claim cites the file where I observed it
-- [ ] I never said "typically" or "usually" about THIS codebase — I either found evidence or said I didn't
-- [ ] I didn't assume directory structure — I verified it
-- [ ] I didn't guess at config values — I read the config files
-- [ ] When I wasn't sure, I asked the user instead of guessing
+After all areas discussed, compile decisions into `.tac/history/{feature-slug}/ASK.md`:
+
+```markdown
+# {Feature} — ASK Decisions
+
+**Date:** {ISO date}
+**Feature:** {feature description}
+
+## Domain Boundary
+{What this feature delivers — clear scope anchor}
+
+## Decisions
+
+### {Area 1}
+- **D-01:** {Decision captured}
+- **D-02:** {Another decision}
+
+### {Area 2}
+- **D-03:** {Decision captured}
+
+### TAC's Discretion
+{Areas where user said "you decide" — TAC has flexibility}
+
+## Existing Code Insights
+
+### Reusable Assets
+- {Component/utility}: {How it applies}
+
+### Established Patterns
+- {Pattern}: {How it constrains this feature}
+
+### Integration Points
+- {Where new code connects}
+
+## Deferred Ideas
+{Ideas mentioned but out of scope — saved for later}
+```
+
+Also save structured JSON to `.tac/history/{feature-slug}/ASK.json`:
+
+```json
+{
+  "feature": "{feature-name}",
+  "decisions": [
+    { "area": "...", "question": "...", "answer": "...", "options_presented": ["..."] }
+  ],
+  "codebase_context": { "reusable": [], "patterns": [], "integration_points": [] },
+  "deferred_ideas": [],
+  "completed_at": "ISO timestamp"
+}
+```
+
+---
+
+## Phase 7: Gate Check & Transition
+
+```
+ASK complete. {N} decisions captured across {M} areas.
+
+Key decisions:
+- {Decision 1}
+- {Decision 2}
+- {Decision 3}
+
+Deferred: {N items noted for later}
+```
+
+Update `.tac/state.json`:
+```json
+{ "feature": "{name}", "stage": "ASK", "status": "complete" }
+```
+
+**Auto-transition to DESIGN** — TAC's auto-wire handles this. The DESIGN stage reads ASK.md and ASK.json to brainstorm approaches with full context.
+
+---
+
+## Anti-Hallucination Checklist
+
+- [ ] Every file reference verified with Glob/Read/Grep
+- [ ] Every pattern claim cites the file where observed
+- [ ] Never assumed directory structure — verified it
+- [ ] Never guessed config values — read config files
+- [ ] When unsure, asked the user instead of guessing

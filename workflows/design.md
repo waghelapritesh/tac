@@ -1,278 +1,273 @@
-# TAC Design Workflow
+# TAC Design Workflow — Superpowers Brainstorm + TDD + Safety
 
 ## Objective
 
-Transform ASK-stage understanding into a concrete spec and phased implementation plan. Brainstorm multiple approaches, let the user choose, then produce artifacts detailed enough to execute without ambiguity.
+Transform ASK-stage decisions into a validated spec and phased implementation plan. Uses Superpowers brainstorming patterns with TDD enforcement and safety-first verification. Once approved, auto-advances to AUTO without user permission.
 
-## Phases
-
-### Phase 1: Load Context
-
-Load all relevant context before doing any creative work.
+## Pipeline Position
 
 ```
-1. Read .tac/project.json → get stack name, project name
-2. Read .tac/state.json → get current feature name, confirm stage
-3. Read .tac/stacks/{stack}.json → get scaffold paths, patterns, safety rules, mobile_css
-4. Read .tac/history/{feature}.json → get ASK-stage decisions and understanding
-5. Read .tac/ui/preferences.json (if exists) → get UI design memory
-
-IF .tac/history/{feature}.json is missing:
-  Warn: "No ASK output found for '{feature}'. Running design without ASK context."
-  Ask user to provide a brief description of what they want to build.
-  Capture their response as the feature understanding.
-
-IF .tac/stacks/{stack}.json is missing:
-  Warn: "Stack profile not found. Using generic patterns."
-  Proceed with codebase scanning to discover patterns manually.
+ASK (GSD-1 gray areas) → DESIGN (this stage) → AUTO (auto-starts, no permission needed)
 ```
 
-### Phase 2: Scan Existing Patterns
+---
+
+## Phase 1: Load ASK Context
+
+```
+1. Read .tac/state.json → current feature, confirm ASK complete
+2. Read .tac/history/{feature}/ASK.md → all decisions and context
+3. Read .tac/history/{feature}/ASK.json → structured decision data
+4. Read .tac/stacks/{stack}.json → scaffold, patterns, safety rules
+5. Read .tac/project.json → stack, project metadata
+
+IF ASK output missing:
+  Warn user. Ask for brief feature description to proceed.
+```
+
+---
+
+## Phase 2: Scan Existing Patterns
 
 Find real code to use as reference implementations.
 
 ```
-1. Use Glob to find modules in the scaffold app_dir pattern
-   Example for django-ims: Glob "inventree_patches/*/apps.py" to list all modules
+1. Glob for modules similar to what's being built
+2. Pick 1-2 closest modules as reference
+3. Read their structure: models, APIs, URLs, templates, deploy scripts
+4. Record as "reference_modules" for brainstorming
 
-2. Pick 1-2 modules closest to the new feature:
-   - Similar data model complexity
-   - Similar frontend needs (page vs API-only vs admin-only)
-   - Similar deploy complexity
-
-3. For each reference module, read and note:
-   - models.py → data model patterns, field types, FK conventions
-   - api.py → API mixin classes, queryset filtering, permissions
-   - urls.py → URL naming conventions, pattern structure
-   - templates/ → frontend patterns, JS approach, CSS approach
-   - deploy script → upload flow, migration approach, restart sequence
-
-4. Record findings as "reference_modules" for use in brainstorming
-
-ANTI-HALLUCINATION: Every file path cited must come from a real Glob or Read result.
-Do not assume a file exists because the stack profile says it should.
+ANTI-HALLUCINATION: Every file path must come from real Glob/Read results.
 ```
 
-### Phase 3: Brainstorm Approaches
+---
 
-Propose 2-3 distinct approaches. Each approach must be genuinely different — not just minor variations.
+## Phase 3: Brainstorm Approaches (Superpowers Style)
 
-```
-For each approach (2-3 total):
+**Design for isolation and clarity** — break the system into units that each have one purpose, communicate through well-defined interfaces, and can be understood and tested independently.
 
-  Name: Short descriptive name
-  Summary: 1-2 sentences explaining the core idea
-  
-  Architecture:
-    - How data flows through the system
-    - Which existing modules are extended vs new modules created
-    - Frontend approach (new page / extend existing / admin-only)
-  
-  Pros:
-    - List concrete advantages (speed, simplicity, reusability, etc.)
-  
-  Cons:
-    - List concrete disadvantages (complexity, risk, effort, tech debt)
-  
-  Effort: small / medium / large
-    - small: 1-2 files changed, no new models, <1 day
-    - medium: new module with models + API + frontend, 1-3 days
-    - large: multiple modules, complex data model, frontend + mobile, 3+ days
-  
-  Risk:
-    - What could break in production
-    - Which core pages (from safety.core_pages) are affected
-    - Whether frozen categories might be impacted
-  
-  Files:
-    - Existing files that change (with brief note on what changes)
-    - New files that get created (with paths from stack scaffold)
+### Present 2-3 Approaches
 
-RECOMMENDATION: State which approach you recommend and why.
-Present as numbered list: "Approach 1:", "Approach 2:", "Approach 3:"
-End with: "Which approach do you prefer? (1/2/3, or describe a mix)"
-```
-
-### Phase 4: Write Spec
-
-After the user picks an approach, write the full spec document.
+For each approach:
 
 ```
-Spec structure (save as .tac/history/{feature}-spec.md):
+Approach N: {Name}
 
-# {Feature Name} — Design Spec
+Summary: 1-2 sentences
+Architecture: How data flows, what's extended vs new
+Pros: Concrete advantages
+Cons: Concrete disadvantages  
+Effort: small / medium / large
+Risk: What could break in production
+Files: Existing files changed + new files created
+
+TDD Strategy: How tests would be structured for this approach
+Safety Impact: Core pages affected, frozen categories, deploy risks
+```
+
+**Recommendation**: State which approach you recommend and why. Lead with the recommendation.
+
+### User Selection
+
+Ask user to pick (1/2/3 or describe a mix). Accept modifications. Confirm final choice.
+
+---
+
+## Phase 4: Safety-First Validation
+
+**Before writing the spec**, validate the chosen approach against safety rules.
+
+### Safety Checklist
+
+```
+[ ] Core pages: Which pages from safety.corePages are affected?
+    - If any affected: FLAG prominently, explain impact
+    - If none: Confirm "No core page impact"
+
+[ ] Frozen paths: Does anything in safety.frozenPaths get modified?
+    - If yes: BLOCK unless exception applies (e.g., REF/Barebones)
+    - If no: Confirm "No frozen path touched"
+
+[ ] Service names: Which services from deploy.services need restart?
+    - Verify exact names (inventree-server, NOT inventree)
+
+[ ] Never-do rules: Does this violate any safety.neverDo?
+    - If yes: BLOCK and explain
+
+[ ] Rollback: Can this be undone if it breaks production?
+    - Document rollback strategy
+```
+
+**If any BLOCK**: Stop and inform user. Do not proceed to spec.
+**If all PASS**: Continue. Show safety summary:
+
+```
+Safety Check: PASS
+- Core pages: {none | list affected}
+- Frozen paths: {none | list}
+- Services: {list to restart}
+- Rollback: {strategy}
+```
+
+---
+
+## Phase 5: TDD-First Spec
+
+Write the spec with tests defined BEFORE implementation. This ensures every feature is verifiable.
+
+Save as `.tac/history/{feature}/DESIGN.md`:
+
+```markdown
+# {Feature} — Design Spec
 
 ## Overview
-What this feature does and why it exists.
-Link back to ASK-stage decisions where relevant.
+What this feature does and why. Link to ASK decisions.
 
 ## Architecture
-- Component diagram (text-based, showing data flow)
-- Which existing modules are extended
-- Which new modules are created
+- Component diagram (text-based)
+- Data flow
 - Integration points with existing code
 
 ## Data Model
-For each new model:
-  - Table name (following stack convention: {module}_{model})
-  - Fields with types, constraints, defaults
-  - Foreign keys with on_delete behavior
-  - Indexes
-  - Permissions / RBAC notes
-
-For each modified model:
-  - What fields are added/changed
-  - Migration safety notes
+For each model: table name, fields, types, constraints, FKs, indexes
 
 ## API Endpoints
-For each endpoint:
-  - Method + Path
-  - Request body / query params
-  - Response shape
-  - Permissions required
-  - Which mixin class to use (from stack patterns)
+For each: method + path, request/response, permissions, mixin class
 
 ## Frontend
-  - Page URL and template path
-  - Key UI components
-  - JavaScript approach (vanilla fetch / library)
-  - User interactions and flows
+Pages, components, interactions, JS approach
 
-## Mobile Responsive Design
-IF frontend is involved:
-  - Read mobile_css from stack profile
-  - Apply breakpoints: mobile (max-width: 768px), tablet (769-1024px), desktop (1025px+)
-  - For tables: card layout on mobile, full table on desktop
-  - For forms: stacked full-width on mobile
-  - For modals: full-screen on mobile
-  - For navigation: bottom nav on mobile if applicable
-  - Reference the CSS file from stack profile (e.g., bims-mobile.css)
-  - Note any new CSS rules needed
+## Mobile Responsive
+If frontend involved: breakpoints, card layouts, stacked forms
+
+## Test Plan (TDD — write tests FIRST)
+
+### Unit Tests
+- {test_feature_creates_model}: Verify model creation with required fields
+- {test_api_returns_correct_data}: Verify API response shape
+- {test_permission_enforced}: Verify RBAC works
+
+### Integration Tests  
+- {test_end_to_end_flow}: Full user workflow
+- {test_deploy_script_smoke}: Deploy script runs without error
+
+### Edge Cases
+- {test_empty_state}: What happens with no data
+- {test_concurrent_access}: If applicable
+- {test_large_dataset}: Performance with N records
 
 ## Safety Impact
-  - Core pages affected (cross-reference with safety.core_pages)
-  - Frozen categories: confirm no impact, or flag if Barebones exception applies
-  - Deploy risk assessment
-  - Rollback strategy
+- Core pages affected: {list or none}
+- Frozen categories: {confirm no impact}
+- Deploy risk: {assessment}
+- Rollback: {strategy}
 
 ## Dependencies
-  - External libraries needed
-  - Other features or modules this depends on
-  - Database changes requiring migration
+External libraries, services, DB migrations
 ```
 
-### Phase 5: Create Implementation Plan
+---
 
-Break the spec into ordered, dependency-aware phases.
+## Phase 6: Create Implementation Plan
 
-```
-Plan structure (save as .tac/history/{feature}-plan.json):
+Break spec into phased tasks with TDD enforcement.
 
+Save as `.tac/history/{feature}/PLAN.json`:
+
+```json
 {
   "feature": "{feature-name}",
-  "approach": "{chosen approach summary}",
+  "approach": "{chosen approach}",
+  "safety_status": "PASS",
   "total_phases": N,
   "phases": [
     {
       "phase": 1,
-      "name": "Data Model & Migration",
-      "description": "Create models and raw SQL migration script",
-      "files": [
-        "inventree_patches/{module}/models.py",
-        "inventree_patches/{module}/__init__.py",
-        "inventree_patches/{module}/apps.py"
-      ],
+      "name": "Tests + Data Model",
+      "description": "Write failing tests for model, then create model to make them pass",
+      "files": ["tests/...", "models.py"],
       "depends_on": [],
-      "verification": "SQL runs without error on test DB; models import cleanly"
-    },
-    {
-      "phase": 2,
-      "name": "API Layer",
-      "description": "...",
-      "files": ["..."],
-      "depends_on": [1],
-      "verification": "..."
+      "tdd": true,
+      "verification": "All model tests pass"
     }
-  ],
-  "created_at": "<ISO timestamp>"
+  ]
 }
-
-Standard phase ordering (adapt to feature needs):
-  1. Data model + migration SQL
-  2. Serializers
-  3. API endpoints + URLs
-  4. URL registration in InvenTree/urls.py and settings.py
-  5. Frontend template + JS
-  6. Mobile CSS (if frontend involved)
-  7. Deploy script
-  8. Smoke test checklist
-
-Each phase MUST have:
-  - Concrete file paths (not placeholders — use stack scaffold patterns)
-  - A verification step that can be checked without deploying
-  - Dependencies explicitly listed
-
-All file paths come from the active stack profile scaffold section.
-When the stack says app_dir is "inventree_patches/{module}/", expand {module} to the actual module name.
 ```
 
-### Phase 6: Gate Check
+**Standard phase ordering** (adapt per feature):
+1. Tests + Data model (RED: write failing tests, GREEN: make them pass)
+2. Tests + Serializers
+3. Tests + API endpoints + URLs
+4. URL/settings registration
+5. Frontend template + JS
+6. Mobile CSS (if frontend)
+7. Deploy script
+8. Smoke test + safety re-check
 
-Validate the plan is concrete enough to execute.
+**Each phase MUST have**:
+- `"tdd": true` — tests written before implementation
+- Concrete file paths from stack profile
+- Verification step
+- Dependencies listed
+
+---
+
+## Phase 7: User Review + Auto-Advance
+
+Present the design summary:
 
 ```
-For each phase in the plan, check:
-  [ ] File paths are real or clearly marked as "new file"
-  [ ] Description is specific enough that someone could implement without asking questions
-  [ ] Verification step is concrete and testable
-  [ ] Dependencies are correct (no circular deps, no missing deps)
+DESIGN complete: {feature name}
 
-For the overall plan:
-  [ ] Safety impact from spec is addressed (which phase handles it?)
-  [ ] Mobile responsive is included if frontend is involved
-  [ ] Deploy script phase exists
-  [ ] No phase is too large (if >5 files, consider splitting)
+Approach: {chosen approach}
+Safety: PASS — {summary}
+Phases: {N} phases, TDD enforced
+Tests: {M} test cases defined
 
-IF any check fails:
-  Refine the plan before saving.
+Key decisions from ASK:
+- {Decision 1}
+- {Decision 2}
 
-Present final plan summary to user:
-  "Plan: {N} phases, estimated {effort}"
-  Brief list of phase names
-  "Ready to proceed to SAFE stage? Or adjust anything?"
+Plan saved to .tac/history/{feature}/PLAN.json
+Spec saved to .tac/history/{feature}/DESIGN.md
 ```
 
-## State Management
+Ask: "Does this look right? Any adjustments before AUTO starts?"
 
-After completing all phases:
+**If user approves (or says nothing blocking)**:
 
+```
+AUTO starting in 3 seconds...
+TAC will execute the plan phase by phase with TDD enforcement.
+Each wave commits atomically. You can interrupt anytime.
+```
+
+**Auto-advance to AUTO** — no permission needed. The auto-wire engine picks up from here:
+- Creates worktree for isolation
+- Executes wave-by-wave with parallel agents
+- Each wave: RED (failing tests) → GREEN (make pass) → COMMIT
+- Safety re-check after final wave
+- Review + merge on completion
+
+Update `.tac/state.json`:
 ```json
-// .tac/state.json
 {
-  "feature": "{feature-name}",
+  "feature": "{name}",
   "stage": "DESIGN",
   "status": "complete",
-  "step": 6,
-  "total_steps": 6,
-  "stack": "{stack-name}"
+  "auto_advance": true
 }
 ```
 
-## Artifacts Produced
-
-| File | Content |
-|------|---------|
-| `.tac/history/{feature}-spec.md` | Full design spec |
-| `.tac/history/{feature}-plan.json` | Phased implementation plan |
-| `.tac/state.json` | Updated stage tracking |
+---
 
 ## Guardrails
 
-- Never skip the brainstorm — always present options even if one is obvious
-- Never write the spec before the user picks an approach
-- Never propose file paths that don't match the stack profile scaffold
-- Never claim a pattern exists without citing the source file
-- If the feature touches core pages, flag it prominently in the safety section
-- If mobile responsive is needed, it gets its own phase — don't bundle it into the frontend phase
-- All timestamps in ISO 8601 format
-- Handle Windows paths (backslash) gracefully — normalize to forward slashes in JSON
+- Never skip brainstorm — always present 2-3 options
+- Never write spec before user picks approach
+- Never skip safety validation — run it BEFORE spec
+- Never proceed if safety check returns BLOCK
+- Never propose file paths that don't match stack profile
+- Never claim patterns exist without citing source files
+- TDD is non-negotiable — every phase has tests first
+- Auto-advance to AUTO is the default — user must explicitly say "stop" to prevent it
