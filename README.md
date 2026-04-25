@@ -107,10 +107,24 @@ Every feature flows through 4 stages. No skipping. Each has a safety gate.
 | `/tac-do review` | Code review (request/receive) |
 | `/tac-do worktree` | Git worktree isolation |
 
-### Auto-Wired (TAC runs these for you)
+## Automatic Behaviors
 
-| Skill | Auto-triggers when |
-|-------|-------------------|
+TAC's auto-wire engine triggers the right skills at the right moment — you don't invoke these manually.
+
+| Behavior | When |
+|----------|------|
+| **Auto-TDD** | Every build task — tests FIRST (RED), then code (GREEN) |
+| **Auto-Spawn** | Plan has 3+ independent tasks — parallel agents in waves |
+| **Auto-Mobile** | Every frontend task — desktop + responsive CSS together |
+| **Auto-Docs** | After DESIGN — PRD.md + SOP.md generated from your answers |
+| **Auto-Safe** | Before every deploy — file paths, services, core pages, DB verified |
+| **Auto-Resume** | Session break — checkpoint saved to `.tac/context/pending.json` |
+| **UI Memory** | You approve a page's look — design patterns saved for reuse |
+
+**Skill auto-triggers:**
+
+| Skill | Fires when |
+|-------|-----------|
 | spike | DESIGN finds unknowns |
 | sketch | Feature has new UI page |
 | worktree | AUTO starts |
@@ -118,28 +132,7 @@ Every feature flows through 4 stages. No skipping. Each has a safety gate.
 | debug | Tests fail during AUTO |
 | review | All waves complete |
 | ship | Review passes (if auto-ship on) |
-| roadmap | Feature completes |
-| todo/seeds | Pipeline starts |
-| health | Session starts |
-| stats | Feature completes |
 | forensics | Feature fails |
-
----
-
-## Everything Else is Automatic
-
-You don't invoke these -- TAC's auto-wire engine handles them at the right pipeline moment.
-
-| Behavior | What happens | When |
-|----------|-------------|------|
-| **Auto-Wire** | Triggers the right skills at each pipeline transition | Every stage change |
-| **Auto-TDD** | Every agent writes tests FIRST (RED), then code (GREEN) | Every build task |
-| **Auto-Spawn** | Parallel agents for independent tasks (wave-based) | Plan has 3+ tasks |
-| **Auto-Mobile** | Desktop + responsive CSS built simultaneously | Every frontend task |
-| **Auto-Docs** | PRD.md + SOP.md generated from your answers | After DESIGN completes |
-| **Auto-Safe** | File paths, services, core pages, DB schema verified | Before every deploy |
-| **Auto-Resume** | Exact checkpoint saved to `.tac/context/pending.json` | Session break or interrupt |
-| **UI Memory** | Design patterns saved when you approve a page's look | User says "looks good" |
 
 Progress is shown as a persistent bar at each transition:
 ```
