@@ -391,20 +391,29 @@ python deploy/deploy_tac_bot.py
 - v5.0 — Auto-wire engine (6 core commands + `/tac-do`), progress bar, auto-triggers
 - v5.1 — Context persistence, learnings system, cost tracking, Playwright UI testing
 
+- v6.0 — Standalone TypeScript CLI: 5 AI providers, 7 tools, dashboard TUI, crash recovery, cost tracking, learnings, SHIP stage
+
 ### Next
-- v6.0 — Standalone CLI runtime (not prompt framework): programmatic session control, crash recovery, stuck detection
-- v6.x — Rich terminal UI (cclinestatus-style dashboard), two-terminal mode
 - v7.0 — Daily/weekly analytics reports, team features, CI/CD integration
 
 ---
 
-## Latest Release — v5.1.0
+## Latest Release — v6.0.0
 
-- Context persistence: saves decisions, Q&A, design choices — auto-restores on `/tac-go` resume
-- Learnings system: auto-captures patterns from SAFE, sketch, debug, forensics
-- Cost tracking: tokens + cost per feature/stage/day/month via `/tac-do stats`
-- `/tac-do learn` — view, add, remove project learnings
-- `/tac-test-ui` — Playwright-based visual testing with auto-fix
+Standalone TypeScript CLI — TAC is no longer just a prompt framework.
+
+- **Standalone CLI**: `tac new "idea"` runs full pipeline without Claude Code
+- **5 AI providers**: Claude, OpenAI, Gemini, Ollama, OpenAI-compatible
+- **7 built-in tools**: Read, Write, Edit, Bash, Glob, Grep, Git
+- **Full pipeline**: ASK → DESIGN → SAFE → AUTO → SHIP → DONE
+- **Wave-based agents**: Parallel execution with TDD enforcement
+- **ANSI dashboard**: Live progress with agent status, logs, costs
+- **Crash recovery**: Heartbeat + stuck detection + auto-resume
+- **Cost tracking**: Real token counting per-feature/daily/monthly
+- **Learnings**: Auto-capture from SAFE/debug, relevance-filtered injection
+- **296 tests** across 50 test files
+
+**CLI repo:** [github.com/waghelapritesh/tac-cli](https://github.com/waghelapritesh/tac-cli)
 
 [Full changelog](CHANGELOG.md)
 
