@@ -44,7 +44,9 @@ Every feature flows through 4 stages. No skipping. Each has a safety gate.
 
 ---
 
-## 6 Commands. That's It.
+## 20 Commands
+
+### Core Pipeline
 
 | Command | What it does | When to use |
 |---------|-------------|-------------|
@@ -54,6 +56,35 @@ Every feature flows through 4 stages. No skipping. Each has a safety gate.
 | `/tac-build "feature"` | Smart pipeline (skips ASK if clear) | When you know what you want |
 | `/tac-go` | Resume from where you stopped | Returning after a break |
 | `/tac-safe` | Verify before deploy | Manual safety check anytime |
+
+### Developer Workflow
+
+| Command | What it does | When to use |
+|---------|-------------|-------------|
+| `/tac-debug` | Systematic 4-phase root-cause analysis | Investigating a bug |
+| `/tac-review` | Code review (request or receive) | Before shipping or processing feedback |
+| `/tac-ship` | Run safety + review + create PR | Ready to merge |
+| `/tac-worktree` | Git worktree isolation per feature | Keeping features separate |
+| `/tac-spike` | Timeboxed experiments (2-5 tests) | Exploring unknowns before design |
+| `/tac-sketch` | HTML mockup variants (2-3 layouts) | Making UI decisions visually |
+
+### Project Management
+
+| Command | What it does | When to use |
+|---------|-------------|-------------|
+| `/tac-roadmap` | Milestones, phases, success criteria | Multi-phase project planning |
+| `/tac-todo` | Backlog, notes, seeds with auto-routing | Capturing ideas and tasks |
+| `/tac-undo` | Safe git revert with dependency checks | Rolling back changes |
+
+### Operations
+
+| Command | What it does | When to use |
+|---------|-------------|-------------|
+| `/tac-forensics` | Post-mortem for failed features | Understanding what went wrong |
+| `/tac-health` | Project health check + auto-fix | Diagnosing TAC state issues |
+| `/tac-stats` | Feature, code, session, cost metrics | Reviewing project progress |
+| `/tac-login` | Authenticate with AI providers | Linking API keys |
+| `/tac-settings` | Configure behavior and model profiles | Tuning TAC |
 
 ---
 
@@ -307,6 +338,21 @@ python deploy/deploy_tac_bot.py
 ---
 
 ## Changelog
+
+### v4.0.0 (2026-04-25)
+- 12 new skills bringing total to 20 commands
+- `/tac-debug` — systematic 4-phase root-cause analysis with persistent state
+- `/tac-worktree` — git worktree isolation per feature with squash merge
+- `/tac-review` — code review (request + receive) with severity classification
+- `/tac-ship` — safety + review + PR creation in one command
+- `/tac-spike` — timeboxed experiments with hypothesis-verdict format
+- `/tac-sketch` — 2-3 HTML mockup variants for visual UI decisions
+- `/tac-roadmap` — milestone and phase lifecycle management
+- `/tac-todo` — backlog, notes, seeds with auto-routing and promotion
+- `/tac-undo` — safe git revert with dependency checking
+- `/tac-forensics` — post-mortem analysis for failed features
+- `/tac-health` — project health diagnostics with auto-fix
+- `/tac-stats` — feature, code, session, and cost metrics dashboard
 
 ### v3.0.0 (2026-04-25)
 - TAC Telegram Bot -- full-featured hosted bot with multi-user support
