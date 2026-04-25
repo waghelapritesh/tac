@@ -408,10 +408,6 @@ python deploy/deploy_tac_bot.py
 
 [Full changelog](CHANGELOG.md)
 
-## Author
-
-**Pritesh** (Comprint)
-
 ## License
 
 MIT
