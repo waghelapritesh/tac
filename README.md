@@ -70,7 +70,27 @@ Every feature flows through 4 stages. No skipping. Each has a safety gate.
 
 ## Commands
 
-### Core Commands (what you type)
+### Standalone CLI (`tac2`)
+
+```bash
+npm install -g tac-cc    # install
+tac2 settings            # set API key
+tac2 new "idea"          # full pipeline
+```
+
+| Command | What it does |
+|---------|-------------|
+| `tac2` | Interactive REPL |
+| `tac2 new "idea"` | Full auto pipeline: ASK -> DESIGN -> SAFE -> AUTO -> SHIP |
+| `tac2 build "feature"` | Smart build (skips ASK if clear) |
+| `tac2 think "idea"` | Explore only (ASK + DESIGN) |
+| `tac2 go` | Resume from checkpoint |
+| `tac2 ship` | Safety + review + PR |
+| `tac2 settings` | Configure provider + API key |
+| `tac2 dashboard` | Live progress TUI |
+| `tac2 do` | Advanced operations (see below) |
+
+### AI Agent Plugin (Claude Code, Gemini CLI)
 
 | Command | What it does |
 |---------|-------------|
@@ -81,7 +101,7 @@ Every feature flows through 4 stages. No skipping. Each has a safety gate.
 | `/tac-go` | Resume from checkpoint |
 | `/tac-ship` | Safety + review + test + PR |
 | `/tac-settings` | Configure behavior, profiles, login |
-| `/tac-do` | Advanced operations (see table below) |
+| `/tac-do` | Advanced operations (see below) |
 
 ### `/tac-do` Actions
 
