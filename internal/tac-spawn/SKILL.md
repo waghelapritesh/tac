@@ -78,11 +78,37 @@ For wave in plan.waves:
   Update .tac/context/pending.json
 ```
 
+### Step 3.5: Live UI Testing (after each wave)
+
+After each wave commits, if the wave included frontend files (templates, CSS, JS, HTML):
+
+1. **Auto-invoke `/tac-test-ui`** against the running app
+2. Target: pages affected by this wave's files
+3. Check for: console errors, HTTP errors, missing elements, visual regressions
+4. **If errors found:**
+   - Show the errors immediately
+   - Attempt auto-fix (trace error → source file → minimal fix)
+   - Re-test the page
+   - If fixed: commit fix as `fix({feature}): resolve {error} from wave {n}`
+   - If not fixed: flag it, continue to next wave (don't block), report at end
+5. **If clean:** continue to next wave
+
+This runs in parallel with the next wave's planning (non-blocking unless critical).
+
+```
+Wave 2 committed → UI test starts (background)
+                 → Wave 3 agents spawn (foreground)
+                 → UI test results arrive
+                    → errors? auto-fix + re-test
+                    → clean? continue
+```
+
 ### Step 4: Assembly
 
 After all waves complete:
 - Run full /tac-safe verification
-- Update .tac/history/{feature}.json with results
+- Run `/tac-test-ui --all` for full regression sweep across all core pages
+- Update .tac/history/{feature}.json with results (including UI test verdicts)
 - Show summary of what was built
 
 ## Agent Prompt Template
