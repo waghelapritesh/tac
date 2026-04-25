@@ -185,6 +185,23 @@ Not every task needs the most expensive model. TAC routes intelligently:
 
 Default: **balanced**
 
+**Supported AI Providers:**
+
+| Provider | Models | Notes |
+|----------|--------|-------|
+| Anthropic (Claude) | Opus, Sonnet, Haiku | Default provider |
+| OpenAI | GPT-4o, GPT-4o-mini, o1, o3 | Full support |
+| Google Gemini | Gemini 2.5 Pro/Flash | Via Google AI Studio or Vertex |
+| Mistral | Large, Medium, Small | Via Mistral API |
+| Groq | Llama, Mixtral | Ultra-fast inference |
+| DeepSeek | DeepSeek-V3, Coder | Cost-effective |
+| xAI | Grok 3/3-mini | Via xAI API |
+| Cohere | Command R+ | Enterprise-focused |
+| Ollama | Any local model | Fully offline, zero cost |
+| OpenAI-compatible | Any | Custom endpoint via `/tac-settings` |
+
+Configure via `/tac-login` or `/tac-settings`. Mix providers per stage (e.g., Opus for DESIGN, Groq for SAFE).
+
 ---
 
 ## Directory Structure
@@ -225,11 +242,85 @@ Default: **balanced**
 
 ---
 
+## Use TAC from Telegram, Discord, or iMessage
+
+TAC works from your phone or any messaging app — two options depending on your needs:
+
+### Option 1: Channel Plugin (Zero Setup)
+
+Use Claude Code's built-in channel plugins to chat with TAC from any platform. No server needed.
+
+```bash
+# Install a channel plugin (e.g., Telegram)
+claude plugins install telegram
+
+# Start Claude Code with TAC
+claude
+
+# Now message your bot on Telegram — TAC commands work directly
+/tac-new "add dark mode toggle"
+```
+
+**Supported channels:** Telegram, Discord, iMessage (macOS)
+
+**How it works:** The channel plugin bridges messages between Telegram and your local Claude Code session. TAC skills run locally on your machine — the pipeline, agents, file access, everything stays local.
+
+**Best for:** Solo developers who want to trigger builds from their phone while Claude Code runs at their desk.
+
+### Option 2: TAC Bot (Hosted, Multi-User)
+
+Deploy the TAC v3 Telegram Bot for a full-featured, public-facing bot with its own server, database, and user management.
+
+```bash
+# Clone and deploy
+git clone https://github.com/waghelapritesh/tac.git
+cd tac/tac-bot
+python deploy/deploy_tac_bot.py
+```
+
+**What you get:**
+- Multi-user public bot (anyone can use it)
+- PostgreSQL persistence (projects, features, conversation history)
+- Redis sessions + rate limiting
+- Cost tracking with daily caps ($2/user, $50/day global)
+- Admin system (/admin ban, stats, usage)
+- WebSocket bridge for remote code execution via `npx tac-bridge connect <token>`
+- Webhook + polling modes
+
+**Best for:** Teams, public products, or when you want TAC as a managed service.
+
+### Comparison
+
+| Feature | Channel Plugin | TAC Bot |
+|---------|---------------|---------|
+| Setup | `claude plugins install telegram` | Deploy to a server |
+| Users | Just you | Anyone (public) |
+| Server needed | No (runs locally) | Yes (Ubuntu + PostgreSQL + Redis) |
+| Code execution | Local (your machine) | Via WebSocket bridge |
+| Database | None (stateless) | PostgreSQL + Redis |
+| Cost tracking | N/A (your API key) | Built-in caps + admin |
+| Pipeline stages | All 4 (ASK/DESIGN/SAFE/AUTO) | All 4 |
+| Multi-project | Yes | Yes (max 5 per user) |
+
+---
+
 ## Changelog
 
+### v3.0.0 (2026-04-25)
+- TAC Telegram Bot -- full-featured hosted bot with multi-user support
+- PostgreSQL + Redis persistence for projects, features, conversations
+- 4-stage pipeline via Claude API (ASK, DESIGN, SAFE stages server-side)
+- WebSocket bridge (`tac-bridge` npm package) for remote AUTO execution
+- Cost tracking with daily per-user ($2) and global ($50) caps
+- Admin system: ban/unban/stats/usage via Telegram commands
+- Rate limiting, Fernet-encrypted API key storage
+- Systemd deployment to dedicated server
+- Channel plugin documentation for zero-setup Telegram/Discord/iMessage usage
+
 ### v2.0.0 (2026-04-25)
-- `/tac-login` -- authenticate with Claude or OpenAI, store keys in ~/.tac/auth.json
+- `/tac-login` -- authenticate with any AI provider, store keys in ~/.tac/auth.json
 - `/tac-settings` -- configure model profiles, auto-behaviors, AI provider, project defaults
+- Multi-provider support: Claude, OpenAI, Google Gemini, Mistral, Groq, Ollama (local), Cohere, DeepSeek, xAI Grok, and any OpenAI-compatible API
 - `install.ps1` -- Windows PowerShell one-liner installer (`irm install.ps1 | iex`)
 - Status line hook -- shows current feature + stage in Claude Code CLI
 - 8 commands total (up from 6)
