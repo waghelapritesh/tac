@@ -366,7 +366,31 @@ python deploy/deploy_tac_bot.py
 
 ---
 
+## Roadmap
+
+### Done
+- v1.0 — Core pipeline (6 commands: init, new, think, build, go, safe)
+- v2.0 — Login, settings, Windows installer, status line hook
+- v3.0 — Telegram Bot (multi-user, hosted), multi-provider AI (10 providers), channel plugins
+- v4.0 — 12 new skills (debug, review, ship, spike, sketch, roadmap, todo, undo, forensics, health, stats, worktree)
+- v5.0 — Auto-wire engine (6 core commands + `/tac-do`), progress bar, auto-triggers
+- v5.1 — Context persistence, learnings system, cost tracking, Playwright UI testing
+
+### Next
+- v6.0 — Standalone CLI runtime (not prompt framework): programmatic session control, crash recovery, stuck detection
+- v6.x — Rich terminal UI (cclinestatus-style dashboard), two-terminal mode
+- v7.0 — Daily/weekly analytics reports, team features, CI/CD integration
+
+---
+
 ## Changelog
+
+### v5.1.0 (2026-04-25)
+- Context persistence: saves decisions, Q&A, design choices to `.tac/context/` — auto-restores on `/tac-go` resume
+- Learnings system: auto-captures patterns from SAFE, sketch, debug, forensics — injects into agent prompts
+- Cost tracking: tokens + cost per feature/stage/day/month in `.tac/costs.json` — visible in `/tac-do stats`
+- `/tac-do learn` — view, add, remove project learnings
+- `/tac-test-ui` — Playwright-based visual testing with auto-fix, integrated into AUTO waves
 
 ### v5.0.0 (2026-04-25)
 - Auto-wire engine: 12 skills auto-trigger at pipeline transitions
