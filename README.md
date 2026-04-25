@@ -4,7 +4,7 @@
 
 # TAC -- Think. Architect. Code.
 
-A Claude Code plugin system for solo developers shipping to live production. TAC combines adaptive Q&A, collaborative brainstorming, safety-first verification, and autonomous execution into one seamless pipeline.
+An AI coding agent plugin for solo developers shipping to live production. Works with Claude Code, Gemini CLI, Codex, and any AI coding agent. TAC combines adaptive Q&A, collaborative brainstorming, safety-first verification, and autonomous execution into one seamless pipeline.
 
 > "You say what to build. TAC figures out how, verifies it's safe, and builds it."
 
@@ -32,7 +32,7 @@ git clone https://github.com/waghelapritesh/tac.git $env:USERPROFILE\.claude\tac
 cd $env:USERPROFILE\.claude\tac; .\install.ps1
 ```
 
-### Then in Claude Code
+### Then in your AI coding agent
 
 ```bash
 cd /path/to/your/project
@@ -265,7 +265,7 @@ Default: **balanced**
 
 | Provider | Models | Notes |
 |----------|--------|-------|
-| Anthropic (Claude) | Opus, Sonnet, Haiku | Default provider |
+| Anthropic | Opus, Sonnet, Haiku | Default provider |
 | OpenAI | GPT-4o, GPT-4o-mini, o1, o3 | Full support |
 | Google Gemini | Gemini 2.5 Pro/Flash | Via Google AI Studio or Vertex |
 | Mistral | Large, Medium, Small | Via Mistral API |
@@ -321,7 +321,7 @@ Configure via `/tac-login` or `/tac-settings`. Mix providers per stage (e.g., Op
     design.md         Brainstorming workflow
     init.md           Initialization workflow
     resume.md         Checkpoint resume workflow
-  hooks/            Claude Code integration
+  hooks/            Agent CLI integration
     tac-session-start.js    Status line display
   stacks/           Built-in stack profiles
     django-ims.json         Django + InvenTree
@@ -339,14 +339,12 @@ TAC works from your phone or any messaging app — two options depending on your
 
 ### Option 1: Channel Plugin (Zero Setup)
 
-Use Claude Code's built-in channel plugins to chat with TAC from any platform. No server needed.
+Use your AI agent's built-in channel plugins to chat with TAC from any platform. No server needed.
 
 ```bash
 # Install a channel plugin (e.g., Telegram)
-claude plugins install telegram
-
-# Start Claude Code with TAC
-claude
+claude plugins install telegram    # Claude Code
+# or equivalent for your agent
 
 # Now message your bot on Telegram — TAC commands work directly
 /tac-new "add dark mode toggle"
@@ -354,9 +352,9 @@ claude
 
 **Supported channels:** Telegram, Discord, iMessage (macOS)
 
-**How it works:** The channel plugin bridges messages between Telegram and your local Claude Code session. TAC skills run locally on your machine — the pipeline, agents, file access, everything stays local.
+**How it works:** The channel plugin bridges messages between Telegram and your local AI agent session. TAC skills run locally on your machine — the pipeline, agents, file access, everything stays local.
 
-**Best for:** Solo developers who want to trigger builds from their phone while Claude Code runs at their desk.
+**Best for:** Solo developers who want to trigger builds from their phone while their agent runs at their desk.
 
 ### Option 2: TAC Bot (Hosted, Multi-User)
 
@@ -414,85 +412,15 @@ python deploy/deploy_tac_bot.py
 
 ---
 
-## Changelog
+## Latest Release — v5.1.0
 
-### v5.1.0 (2026-04-25)
-- Context persistence: saves decisions, Q&A, design choices to `.tac/context/` — auto-restores on `/tac-go` resume
-- Learnings system: auto-captures patterns from SAFE, sketch, debug, forensics — injects into agent prompts
-- Cost tracking: tokens + cost per feature/stage/day/month in `.tac/costs.json` — visible in `/tac-do stats`
+- Context persistence: saves decisions, Q&A, design choices — auto-restores on `/tac-go` resume
+- Learnings system: auto-captures patterns from SAFE, sketch, debug, forensics
+- Cost tracking: tokens + cost per feature/stage/day/month via `/tac-do stats`
 - `/tac-do learn` — view, add, remove project learnings
-- `/tac-test-ui` — Playwright-based visual testing with auto-fix, integrated into AUTO waves
+- `/tac-test-ui` — Playwright-based visual testing with auto-fix
 
-### v5.0.0 (2026-04-25)
-- Auto-wire engine: 12 skills auto-trigger at pipeline transitions
-- `/tac-do <action>` catch-all command for advanced operations
-- 6 core commands replace 20 — rest are auto-wired or accessed via `/tac-do`
-- `/tac-ship` now runs full SAFE checks inline (no delegation)
-- `/tac-settings login` absorbs `/tac-login` (kept as alias)
-- Progress bar at every pipeline transition
-- Auto-triggers: spike (unknowns), sketch (new UI), worktree (AUTO start), test-ui (frontend waves), debug (test failures), review (waves complete), ship (review passes), roadmap/todo/stats/health/forensics (lifecycle events)
-
-### v4.0.0 (2026-04-25)
-- 12 new skills bringing total to 20 commands
-- `/tac-debug` — systematic 4-phase root-cause analysis with persistent state
-- `/tac-worktree` — git worktree isolation per feature with squash merge
-- `/tac-review` — code review (request + receive) with severity classification
-- `/tac-ship` — safety + review + PR creation in one command
-- `/tac-spike` — timeboxed experiments with hypothesis-verdict format
-- `/tac-sketch` — 2-3 HTML mockup variants for visual UI decisions
-- `/tac-roadmap` — milestone and phase lifecycle management
-- `/tac-todo` — backlog, notes, seeds with auto-routing and promotion
-- `/tac-undo` — safe git revert with dependency checking
-- `/tac-forensics` — post-mortem analysis for failed features
-- `/tac-health` — project health diagnostics with auto-fix
-- `/tac-stats` — feature, code, session, and cost metrics dashboard
-
-### v3.0.0 (2026-04-25)
-- TAC Telegram Bot -- full-featured hosted bot with multi-user support
-- PostgreSQL + Redis persistence for projects, features, conversations
-- 4-stage pipeline via Claude API (ASK, DESIGN, SAFE stages server-side)
-- WebSocket bridge (`tac-bridge` npm package) for remote AUTO execution
-- Cost tracking with daily per-user ($2) and global ($50) caps
-- Admin system: ban/unban/stats/usage via Telegram commands
-- Rate limiting, Fernet-encrypted API key storage
-- Systemd deployment to dedicated server
-- Channel plugin documentation for zero-setup Telegram/Discord/iMessage usage
-
-### v2.0.0 (2026-04-25)
-- `/tac-login` -- authenticate with any AI provider, store keys in ~/.tac/auth.json
-- `/tac-settings` -- configure model profiles, auto-behaviors, AI provider, project defaults
-- Multi-provider support: Claude, OpenAI, Google Gemini, Mistral, Groq, Ollama (local), Cohere, DeepSeek, xAI Grok, and any OpenAI-compatible API
-- `install.ps1` -- Windows PowerShell one-liner installer (`irm install.ps1 | iex`)
-- Status line hook -- shows current feature + stage in Claude Code CLI
-- 8 commands total (up from 6)
-
-### v1.1.0 (2026-04-25)
-- Auto-TDD enforcement in every spawned agent (RED -> GREEN mandatory)
-- Auto-spawn parallel agents when plan has 3+ independent tasks
-- Auto-mobile responsive CSS alongside every template
-- Auto-docs: PRD.md + SOP.md generated after DESIGN
-- Autonomous AUTO stage (runs without permission after SAFE passes)
-- Simplified from 12 commands to 6 (rest auto-invoked)
-
-### v1.0.0 (2026-04-25)
-- Initial release
-- 6 core commands: init, new, think, build, go, safe
-- 7 auto-invoked internal behaviors
-- 4 workflows: ask, design, init, resume
-- 2 built-in stack profiles: django-ims, react-full
-- SessionStart hook for status line
-- Wave-based parallel agent execution
-
-## Roadmap
-
-| Version | What | Status |
-|---------|------|--------|
-| v1.0 | Claude Code skills (6 commands + 7 auto-behaviors) | Released |
-| v2.0 | Login + Settings + Windows installer + status line | Released |
-| v3.0 | Telegram bot (manage projects from phone) | Next |
-| v4.0 | Web dashboard | Planned |
-
----
+[Full changelog](CHANGELOG.md)
 
 ## Author
 
